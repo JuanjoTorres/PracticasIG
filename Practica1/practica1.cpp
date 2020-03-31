@@ -3,10 +3,8 @@
 ////////////////////////////////////////////////////
 #if defined(__APPLE__)
 
-#include <stdlib.h>
+#define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <OpenGL/OpenGL.h>
 #include <GLUT/glut.h>
 
 #else
