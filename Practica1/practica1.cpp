@@ -20,7 +20,7 @@ const int W_HEIGHT = 500;
 GLfloat fAngulo; // Variable que indica el angulo de rotacion de los ejes. 
 
 // Funcion que visualiza la escena OpenGL
-void Display(void) {
+void Display() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -60,7 +60,7 @@ void Display(void) {
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
-void Idle(void) {
+void Idle() {
     // Incrementamos el angulo
     fAngulo += 0.3f;
     // Si es mayor que dos pi la decrementamos
