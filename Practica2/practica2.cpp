@@ -1,9 +1,22 @@
 // Etapa1.cpp
 // Fichero principal 
 ////////////////////////////////////////////////////
+#if defined(__APPLE__)
+
+#include <stdlib.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+
+#else
+
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+
+#endif
+
 const int W_WIDTH = 250; // Tamano incial de la ventana
 const int W_HEIGHT = 500;
 GLfloat fAngulo; // Variable que indica el angulo de rotacion de los ejes. 
