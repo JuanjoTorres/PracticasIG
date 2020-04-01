@@ -65,27 +65,37 @@ void Display() {
 
     glPushMatrix();
     // Rotamos las proximas primitivas
-    glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+    //glRotatef(fAngulo, 0.5f, 0.5f, 0.5f);
 
-    // Creamos a continuacion dibujamos los tres poligonos
-
-    glBegin(GL_POLYGON);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glVertex2f(0.0f, 0.0f);
+    // Dibujamos el triangulo
+    glBegin(GL_TRIANGLES);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glVertex2f(0.5f, 0.2f);
     glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(1.0f, 0.0f);
+    glVertex2f(0.2f, 0.5f);
     glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex2f(-0.5f, -0.866f);
+    glVertex2f(0.8f, 0.8f);
     glEnd();
 
+    glPopMatrix();
+
+    glPushMatrix();
+    // Rotamos las proximas primitivas
+    //glRotatef(fAngulo, 0.5f, 0.5f, -1.0f);
+    // Realizamos la traslación
+    //glTranslatef(-0.5f, 0.5f, 0.0f);
+
+
+    // Dibujamos el triangulo
     glBegin(GL_POLYGON);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glVertex2f(0.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 1.0f);
-    glVertex2f(-0.5f, 0.866f);
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex2f(-0.5f, -0.866f);
+    glColor3f(0.5895f, 0.234234f, 0.06546f);
+    glVertex2f(0.2f, -0.2f);
+    glVertex2f(0.2f, -0.8f);
+    glVertex2f(0.8f, -0.8f);
+    glVertex2f(0.8f, -0.2f);
     glEnd();
+
+
 
     glPopMatrix();
 
