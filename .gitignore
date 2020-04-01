@@ -13,3 +13,4 @@ dependencies
 .gitattributes
 **/Debug
 *.sln
+out
