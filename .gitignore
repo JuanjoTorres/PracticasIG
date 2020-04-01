@@ -5,7 +5,11 @@
 cmake-build-debug
 
 #Visual Studio project files
+.vs
 dependencies
 *.vcxproj
 *.vcxproj.filters
+*.vcxproj.user
 .gitattributes
+**/Debug
+*.sln
