@@ -60,9 +60,6 @@ void Reshape(int width, int height) {
 // Funcion que visualiza la escena OpenGL
 void Display() {
 
-    // Funcion de redimension de la ventana
-    glutReshapeFunc(Reshape);
-
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -125,17 +122,13 @@ int main(int argc, char **argv) {
     // Creamos la nueva ventana
     glutCreateWindow("Mi segunda Ventana");
 
-    //Reshape al iniciar
-    glutReshapeFunc(Reshape);
-
-    // Indicamos cuales son las funciones de redibujado e idle
+    // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(Display);
     glutIdleFunc(Idle);
+    glutReshapeFunc(Reshape);
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-    //gluOrtho2D(0 - (wMon * (aspectRatioV / aspecRatioW)) / 2, 0 + (wMon * (aspectRatioV / aspecRatioW)) / 2, -hMon / 2, hMon / 2);
 
     gluOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f);
 
