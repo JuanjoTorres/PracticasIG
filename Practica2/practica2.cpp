@@ -66,6 +66,7 @@ void Display() {
     glPushMatrix();
     // Rotamos las proximas primitivas
     glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+
     // Creamos a continuacion dibujamos los tres poligonos
     glBegin(GL_POLYGON);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    gluOrtho2D(-1.0f, 1.0f, -1.0f, 1.0f);
+    gluOrtho2D(0 - float(W_WINDOW) / 2, float(W_WINDOW) / 2, 0 - float(H_WINDOW) / 2, float(W_WINDOW) / 2);
 
     // Comienza la ejecucion del core de GLUT
     glutMainLoop();
