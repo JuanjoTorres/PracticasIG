@@ -117,7 +117,26 @@ void Display() {
     glVertex2f(0.8f, -0.2f);
     glEnd();
 
+    glPopMatrix();
 
+    glPushMatrix();
+
+/*  No se hacerlas rotar :(
+    glTranslatef(0.5f, -0.5f, 0.0f);
+    glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+    glTranslatef(-0.5f, 0.5f, 0.0f);
+*/
+
+
+    // Dibujamos el pentagono
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.7f, 0.0f);
+    glVertex2f(-0.15f, -0.4f);
+    glVertex2f(-0.5, -0.1);
+    glVertex2f(-0.85f, -0.4f);
+    glVertex2f(-0.7f, -0.8f);
+    glVertex2f(-0.3f, -0.8f);
+    glEnd();
 
     glPopMatrix();
 
