@@ -63,9 +63,20 @@ void Display() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT);
 
+    /*glPushMatrix();
+    glBegin(GL_POLYGON);
+    glVertex2f(-0.35, -1.0);
+    glVertex2f(-1.0, 0.3);
+    glVertex2f(0.0, 1.0);
+    glVertex2f(1.0, 0.3);
+    glVertex2f(0.7, -1.0);
+    glEnd();
+    glPopMatrix();*/
+
     glPushMatrix();
-    // Rotamos las proximas primitivas
-    //glRotatef(fAngulo, 0.5f, 0.5f, 0.5f);
+    glTranslatef(0.5f, 0.5f, 0.0f);
+    glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+    glTranslatef(-0.5f, -0.5f, 0.0f);
 
     // Dibujamos el triangulo
     glBegin(GL_TRIANGLES);
@@ -80,13 +91,13 @@ void Display() {
     glPopMatrix();
 
     glPushMatrix();
-    // Rotamos las proximas primitivas
-    //glRotatef(fAngulo, 0.5f, 0.5f, -1.0f);
-    // Realizamos la traslación
-    //glTranslatef(-0.5f, 0.5f, 0.0f);
+
+    glTranslatef(0.5f, -0.5f, 0.0f);
+    glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+    glTranslatef(-0.5f, 0.5f, 0.0f);
 
 
-    // Dibujamos el triangulo
+    // Dibujamos el cuadrado
     glBegin(GL_POLYGON);
     glColor3f(0.5895f, 0.234234f, 0.06546f);
     glVertex2f(0.2f, -0.2f);
