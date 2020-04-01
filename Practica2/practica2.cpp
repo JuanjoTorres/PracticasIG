@@ -17,7 +17,7 @@
 #endif
 
 // Tamano inicial de la ventana
-const int W_WIDTH = 250;
+const int W_WIDTH = 500;
 const int W_HEIGHT = 500;
 
 // Tamaño del Window
@@ -68,14 +68,6 @@ void Display() {
     glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
 
     // Creamos a continuacion dibujamos los tres poligonos
-    glBegin(GL_POLYGON);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glVertex2f(0.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex2f(1.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex2f(-0.5f, 0.866f);
-    glEnd();
 
     glBegin(GL_POLYGON);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -94,7 +86,17 @@ void Display() {
     glColor3f(0.0f, 0.0f, 1.0f);
     glVertex2f(-0.5f, -0.866f);
     glEnd();
+
     glPopMatrix();
+
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glVertex2f(-1.0f, 0.0f); // Linea horizontal
+    glVertex2f(1.0f, 0.0f);
+
+    glVertex2f(0.0f, 1.0f); // Linea vertical
+    glVertex2f(0.0f, -1.0f);
+    glEnd();
 
     glutSwapBuffers();
 }
