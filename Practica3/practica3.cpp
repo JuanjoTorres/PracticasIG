@@ -17,21 +17,37 @@
 #include <iostream>
 #include <cmath>
 
+#include <iostream>
+
+using namespace std;
+
 const int W_WIDTH = 500;
 const int W_HEIGHT = 500;
 
 const int W_WINDOW = 2;
 const int H_WINDOW = 2;
 
-const float CENTER_X = 0.0f;
-const float CENTER_Y = 0.75f;
+const float PI = 3.1415926f;
+const float GRAV = -0.1;
 
-float innerRadius = 0.2f;
-float outerRadius = 0.2f;
-float massSmallBall = 10;
-float massBigBall = 10;
-float innerAngle = 0.3f;
-float outterAngle = 0.3f;
+const float CENTER_X = 0.0f;
+const float CENTER_Y = 0.0f;
+
+float innerRadius = 0.4f;
+float outterRadius = 0.4f;
+
+float massInnerBall = 0.1f;
+float massOutterBall = 0.2f;
+
+float innerAngle = 0.2f;
+float outterAngle = 0.9f;
+
+float innerAccel = 0.0f;
+float outterAccel = 0.0f;
+
+float innerSpeed = 0.0f;
+float outterSpeed = 0.0f;
+
 
 float posXInner;
 float posYInner;
@@ -45,7 +61,7 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     //Número de triangulos usados para dibujar el círculo
     int triangleAmount = 50;
 
-    GLfloat twicePi = 2.0f * 3.1415926f;
+    GLfloat twicePi = 2.0f * PI;
 
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(x, y); // center of circle
@@ -110,19 +126,13 @@ void Display() {
 
     //Dibujar punto de anclaje del péndulo
     glColor3f(0.0f, 0.0f, 0.0f);
-    drawCircle(CENTER_X, CENTER_Y, -0.98f, 0.98f);
-
-    posXInner = innerRadius * sin(innerAngle);
-    posYInner = innerRadius * cos(innerAngle);
-
-    posXOutter = posXInner + outerRadius * sin(outterAngle);
-    posYOutter = posYInner + outerRadius * cos(outterAngle);
+    drawCircle(CENTER_X, CENTER_Y, -0.99f, 0.99f);
 
     drawInnerLine(posXInner, posYInner);
     drawCircle(posXInner, posYInner, -0.98f, 0.98f);
 
     drawOutterLine(posXInner, posYInner, posXOutter, posYOutter);
-    drawCircle(posXOutter, posYOutter, -0.98f, 0.98f);
+    drawCircle(posXOutter, posYOutter, -0.97f, 0.97f);
 
     glutSwapBuffers();
 }
@@ -130,6 +140,45 @@ void Display() {
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void Idle() {
 
+    float num1 = -GRAV * (2 * massInnerBall + massOutterBall) * sin(innerAngle);
+    float num2 = -massOutterBall * GRAV * sin(innerAngle - 2 * outterAngle);
+    float num3 = -2 * sin(innerAngle - outterAngle) * massOutterBall;
+    float num4 = outterSpeed * outterSpeed * outterRadius +
+                 innerSpeed * innerSpeed * innerRadius * cos(innerAngle - outterAngle);
+
+    float denom = innerRadius * (2 * massInnerBall + massOutterBall -
+                                 massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
+
+    cout << num1 << "+" << num2 << "+" << num3 << "*" << num4 << "/" << denom << endl;
+
+    innerAccel = (num1 + num2 + num3 * num4) / denom;
+
+    num1 = 2 * sin(innerAngle - outterAngle);
+    num2 = (innerSpeed * innerSpeed * innerRadius * (massInnerBall + massOutterBall));
+    num3 = GRAV * (massInnerBall + massOutterBall) * cos(innerAngle);
+    num4 = outterSpeed * outterSpeed * outterRadius * massOutterBall * cos(innerAngle - outterAngle);
+
+    denom = outterRadius * (2 * massInnerBall + massOutterBall -
+                           massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
+
+    outterAccel = (num1 * (num2 + num3 + num4)) / denom;
+
+    innerSpeed += innerAccel;
+    outterSpeed += outterAccel;
+
+    innerAngle += innerSpeed;
+    outterAngle += innerSpeed;
+
+    posXInner = innerRadius * sin(innerAngle);
+    posYInner = innerRadius * cos(innerAngle) + CENTER_Y;
+
+    posXOutter = posXInner + outterRadius * sin(outterAngle);
+    posYOutter = posYInner + outterRadius * cos(outterAngle);
+
+    cout << "innerAngle: " << innerAngle << endl;
+    cout << "innerSpeed: " << innerSpeed << endl;
+    cout << "outterAngle: " << outterAngle << endl;
+    cout << "outterSpeed: " << outterSpeed << endl;
 
     //Repintar la pantalla
     glutPostRedisplay();
