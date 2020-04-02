@@ -23,18 +23,21 @@ const int W_HEIGHT = 500;
 const int W_WINDOW = 2;
 const int H_WINDOW = 2;
 
-float innerRadius = 0.2;
-float outerRadius = 0.2;
+const float CENTER_X = 0.0f;
+const float CENTER_Y = 0.75f;
+
+float innerRadius = 0.2f;
+float outerRadius = 0.2f;
 float massSmallBall = 10;
 float massBigBall = 10;
-float innerAngle = 0;
-float outterAngle = 0;
+float innerAngle = 0.3f;
+float outterAngle = 0.3f;
 
-float posXSmall = 0.2;
-float posYSmall = 0.2;
+float posXInner;
+float posYInner;
 
-float posXBig = 0.8;
-float posYBig = -0.8;
+float posXOutter;
+float posYOutter;
 
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
@@ -87,7 +90,7 @@ void Reshape(int width, int height) {
 
 void drawInnerLine(float x, float y) {
     glBegin(GL_LINES);
-    glVertex2d(0.0, 0.0);
+    glVertex2d(CENTER_X, CENTER_Y);
     glVertex2d(x, y);
     glEnd();
 }
@@ -107,17 +110,19 @@ void Display() {
 
     //Dibujar punto de anclaje del péndulo
     glColor3f(0.0f, 0.0f, 0.0f);
-    drawCircle(0.0f, 0.0f, -0.98f, 0.98f);
+    drawCircle(CENTER_X, CENTER_Y, -0.98f, 0.98f);
 
-    //float posXSmall = innerRadius * sin(innerAngle);
-    //float posYSmall = innerRadius * cos(innerAngle);
+    posXInner = innerRadius * sin(innerAngle);
+    posYInner = innerRadius * cos(innerAngle);
 
-    drawInnerLine(posXSmall, posYSmall);
-    drawCircle(posXSmall, posYSmall, -0.98f, 0.98f);
+    posXOutter = posXInner + outerRadius * sin(outterAngle);
+    posYOutter = posYInner + outerRadius * cos(outterAngle);
 
+    drawInnerLine(posXInner, posYInner);
+    drawCircle(posXInner, posYInner, -0.98f, 0.98f);
 
-    drawOutterLine(posXSmall, posYSmall, posXBig, posYBig);
-    drawCircle(posXBig, posYBig, -0.98f, 0.98f);
+    drawOutterLine(posXInner, posYInner, posXOutter, posYOutter);
+    drawCircle(posXOutter, posYOutter, -0.98f, 0.98f);
 
     glutSwapBuffers();
 }
