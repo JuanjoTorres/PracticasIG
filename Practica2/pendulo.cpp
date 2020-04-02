@@ -15,6 +15,7 @@
 #endif
 
 #include <iostream>
+#include <cmath>
 
 const int W_WIDTH = 500;
 const int W_HEIGHT = 500;
@@ -22,15 +23,37 @@ const int W_HEIGHT = 500;
 const int W_WINDOW = 2;
 const int H_WINDOW = 2;
 
-GLfloat fAngulo;
-GLfloat fScale;
+float innerRadius = 0.2;
+float outerRadius = 0.2;
+float massSmallBall = 10;
+float massBigBall = 10;
+float innerAngle = 0;
+float outterAngle = 0;
 
-float in_radius = 0.2;
-float out_radius = 0.2;
-float mass_smallBall = 10;
-float mass_bigBall = 10;
-float in_angle = 0;
-float out_angle = 0;
+float posXSmall = 0.2;
+float posYSmall = 0.2;
+
+float posXBig = 0.8;
+float posYBig = -0.8;
+
+
+void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
+    int i;
+    //Número de triangulos usados para dibujar el círculo
+    int triangleAmount = 50;
+
+    GLfloat twicePi = 2.0f * 3.1415926f;
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y); // center of circle
+    for (i = 0; i <= triangleAmount; i++) {
+        glVertex2f(
+                x + ((xcenter + 1) * cos(i * twicePi / triangleAmount)),
+                y + ((ycenter - 1) * sin(i * twicePi / triangleAmount))
+        );
+    }
+    glEnd();
+}
 
 void Reshape(int width, int height) {
 
@@ -46,21 +69,34 @@ void Reshape(int width, int height) {
         // by a factor of (aspect_viewport/aspect_region)
         glLoadIdentity();
         gluOrtho2D(0 - (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-            0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-            float(-H_WINDOW) / 2,
-            float(H_WINDOW) / 2);
-    }
-    else {
+                   0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
+                   float(-H_WINDOW) / 2,
+                   float(H_WINDOW) / 2);
+    } else {
         //Otherwise, the aspect of the window is lower than aspect of your region,
         // so you should use the full width and scale up the vertical range by (aspect_region/aspect_viewport)
         glLoadIdentity();
         gluOrtho2D(float(-W_WINDOW) / 2,
-            float(W_WINDOW) / 2,
-            0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
-            0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
+                   float(W_WINDOW) / 2,
+                   0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
+                   0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
     }
 
     glViewport(0, 0, width, height);
+}
+
+void drawInnerLine(float x, float y) {
+    glBegin(GL_LINES);
+    glVertex2d(0.0, 0.0);
+    glVertex2d(x, y);
+    glEnd();
+}
+
+void drawOutterLine(float initX, float initY, float endX, float endY) {
+    glBegin(GL_LINES);
+    glVertex2d(initX, initY);
+    glVertex2d(endX, endY);
+    glEnd();
 }
 
 // Funcion que visualiza la escena OpenGL
@@ -69,26 +105,33 @@ void Display() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT);
 
-    float positionX_smallBall = in_radius * sin(in_angle);
-    float positionY_smallBall = in_radius * cos(in_angle);
+    //Dibujar punto de anclaje del péndulo
+    glColor3f(0.0f, 0.0f, 0.0f);
+    drawCircle(0.0f, 0.0f, -0.98f, 0.98f);
 
-    glBegin(GL_LINES);
-    glVertex2d(0.0, 0.9);
-    glVertex2d(0.2, 0.2);
-    glEnd();
+    //float posXSmall = innerRadius * sin(innerAngle);
+    //float posYSmall = innerRadius * cos(innerAngle);
+
+    drawInnerLine(posXSmall, posYSmall);
+    drawCircle(posXSmall, posYSmall, -0.98f, 0.98f);
+
+
+    drawOutterLine(posXSmall, posYSmall, posXBig, posYBig);
+    drawCircle(posXBig, posYBig, -0.98f, 0.98f);
 
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void Idle() {
-    
 
+
+    //Repintar la pantalla
     glutPostRedisplay();
 }
 
 // Funcion principal
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
@@ -98,7 +141,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 
     // Creamos la nueva ventana
-    glutCreateWindow("P�ndulo Doble");
+    glutCreateWindow("Péndulo Doble");
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(Display);
