@@ -17,7 +17,7 @@
 
 const int W_WIDTH = 500; // Tamano incial de la ventana
 const int W_HEIGHT = 500;
-GLfloat fAngulo; // Variable que indica el angulo de rotacion de los ejes. 
+GLfloat rotateAngle; // Variable que indica el angulo de rotacion de los ejes.
 
 // Funcion que visualiza la escena OpenGL
 void Display() {
@@ -26,7 +26,7 @@ void Display() {
 
     glPushMatrix();
     // Rotamos las proximas primitivas
-    glRotatef(fAngulo, 0.0f, 0.0f, 1.0f);
+    glRotatef(rotateAngle, 0.0f, 0.0f, 1.0f);
     // Creamos a continuacion dibujamos los tres poligonos
     glBegin(GL_POLYGON);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -62,10 +62,10 @@ void Display() {
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void Idle() {
     // Incrementamos el angulo
-    fAngulo += 0.3f;
+    rotateAngle += 0.3f;
     // Si es mayor que dos pi la decrementamos
-    if (fAngulo > 360)
-        fAngulo -= 360;
+    if (rotateAngle > 360)
+        rotateAngle -= 360;
     // Indicamos que es necesario repintar la pantalla
     glutPostRedisplay();
 }
