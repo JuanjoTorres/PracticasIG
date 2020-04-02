@@ -14,7 +14,7 @@
 
 #endif
 
-#include <iostream>
+#include <cmath>
 
 const int W_WIDTH = 500;
 const int W_HEIGHT = 500;
@@ -72,17 +72,46 @@ void Display() {
     float positionX_smallBall = in_radius * sin(in_angle);
     float positionY_smallBall = in_radius * cos(in_angle);
 
+    float positionX_bigBall = positionX_smallBall + out_radius * sin(out_radius);
+    float positionY_bigBall = positionY_smallBall + out_radius * cos(out_radius);
+
+    // Cuerda interna
     glBegin(GL_LINES);
+    glColor3f(0.0, 0.0, 0.0);
     glVertex2d(0.0, 0.9);
-    glVertex2d(0.2, 0.2);
+    glVertex2d(positionX_smallBall, positionY_smallBall);
     glEnd();
 
+    // Bola interna
+    glBegin(GL_QUADS);
+        glColor3f(1.0, 0.0, 0.0);
+        glVertex2d(-0.05 + positionX_smallBall,  0.05 + positionY_smallBall);
+        glVertex2d( 0.05 + positionX_smallBall,  0.05 + positionY_smallBall);
+        glVertex2d( 0.05 + positionX_smallBall, -0.05 + positionY_smallBall);
+        glVertex2d(-0.05 + positionX_smallBall, -0.05 + positionY_smallBall);
+    glEnd();
+
+    // Cuerda externa
+    glBegin(GL_LINES);
+        glColor3f(0.0, 0.0, 0.0);
+        glVertex2d(positionX_smallBall, positionY_smallBall);
+        glVertex2d(positionX_bigBall, positionY_bigBall);
+    glEnd();
+
+    // Bola externa
+    /*glBegin(GL_QUADS);
+    glColor3f(1.0, 0.0, 0.0);
+        glVertex2d(-0.05 + positionX_bigBall,  0.05 + positionY_bigBall);
+        glVertex2d( 0.05 + positionX_bigBall,  0.05 + positionY_bigBall);
+        glVertex2d( 0.05 + positionX_bigBall, -0.05 + positionY_bigBall);
+        glVertex2d(-0.05 + positionX_bigBall, -0.05 + positionY_bigBall);
+    glEnd();*/
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void Idle() {
-    
+
 
     glutPostRedisplay();
 }
