@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Péndulo Doble");
+    glutCreateWindow("Pendulo Doble");
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(Display);
