@@ -165,11 +165,9 @@ void paintFigure3() {
 
     glTranslatef(translateX, translateY, 0);
 
-    // Dibujamos el pentagono
-    glBegin(GL_POLYGON);
+    // Dibujamos el circulo
     glColor3f(0.5f, 1.0f, 0.5f);
     drawCircle(-0.5f, -0.5f, -0.75f, 0.75f);
-    glEnd();
 
     glPopMatrix();
 }
