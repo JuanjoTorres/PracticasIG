@@ -14,10 +14,8 @@
 
 #endif
 
-#include <iostream>
+//#include <iostream>
 #include <cmath>
-
-#include <iostream>
 
 using namespace std;
 
@@ -27,20 +25,22 @@ const int W_HEIGHT = 500;
 const int W_WINDOW = 2;
 const int H_WINDOW = 2;
 
+const int PATH_LENGTH = 1000;
+
 const float PI = 3.1415926f;
 const float GRAV = -0.001;
 
 const float CENTER_X = 0.0f;
-const float CENTER_Y = 0.0f;
+const float CENTER_Y = 0.5f;
 
-float innerRadius = 0.4f;
-float outterRadius = 0.4f;
+float innerRadius = 0.5f;
+float outterRadius = 0.5f;
 
 float massInnerBall = 40;
 float massOutterBall = 40;
 
-float innerAngle = 0.2f;
-float outterAngle = 0.9f;
+float innerAngle = PI / 2;
+float outterAngle = PI / 2;
 
 float innerAccel = 0.0f;
 float outterAccel = 0.0f;
@@ -48,12 +48,16 @@ float outterAccel = 0.0f;
 float innerSpeed = 0.0f;
 float outterSpeed = 0.0f;
 
-
 float posXInner;
 float posYInner;
 
 float posXOutter;
 float posYOutter;
+
+float pathXVector[PATH_LENGTH];
+float pathYVector[PATH_LENGTH];
+
+int frames;
 
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
@@ -67,8 +71,8 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     glVertex2f(x, y); // center of circle
     for (i = 0; i <= triangleAmount; i++) {
         glVertex2f(
-                x + ((xcenter + 1) * cos(i * twicePi / triangleAmount)),
-                y + ((ycenter - 1) * sin(i * twicePi / triangleAmount))
+                x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
+                y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
         );
     }
     glEnd();
@@ -118,6 +122,17 @@ void drawOutterLine(float initX, float initY, float endX, float endY) {
     glEnd();
 }
 
+void drawPath() {
+    for (size_t i = 0; i < PATH_LENGTH; i++) {
+        if (pathXVector[i] != 0.0) {
+            glBegin(GL_POINTS);
+            glColor3f(0.0f, 0.0f, 1.0f);
+            glVertex3f(pathXVector[i], pathYVector[i], 0.0f);
+            glEnd();
+        }
+    }
+}
+
 // Funcion que visualiza la escena OpenGL
 void Display() {
 
@@ -134,6 +149,8 @@ void Display() {
     drawOutterLine(posXInner, posYInner, posXOutter, posYOutter);
     drawCircle(posXOutter, posYOutter, -0.97f, 0.97f);
 
+    drawPath();
+
     glutSwapBuffers();
 }
 
@@ -149,8 +166,6 @@ void Idle() {
     float denom = innerRadius * (2 * massInnerBall + massOutterBall -
                                  massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
 
-    cout << num1 << "+" << num2 << "+" << num3 << "*" << num4 << "/" << denom << endl;
-
     innerAccel = (num1 + num2 + num3 * num4) / denom;
 
     num1 = 2 * sin(innerAngle - outterAngle);
@@ -159,7 +174,7 @@ void Idle() {
     num4 = outterSpeed * outterSpeed * outterRadius * massOutterBall * cos(innerAngle - outterAngle);
 
     denom = outterRadius * (2 * massInnerBall + massOutterBall -
-                           massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
+                            massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
 
     outterAccel = (num1 * (num2 + num3 + num4)) / denom;
 
@@ -175,10 +190,10 @@ void Idle() {
     posXOutter = posXInner + outterRadius * sin(outterAngle);
     posYOutter = posYInner + outterRadius * cos(outterAngle);
 
-    cout << "innerAngle: " << innerAngle << endl;
-    cout << "innerSpeed: " << innerSpeed << endl;
-    cout << "outterAngle: " << outterAngle << endl;
-    cout << "outterSpeed: " << outterSpeed << endl;
+    pathXVector[frames % PATH_LENGTH] = posXOutter;
+    pathYVector[frames % PATH_LENGTH] = posYOutter;
+
+    frames++;
 
     //Repintar la pantalla
     glutPostRedisplay();
@@ -192,7 +207,7 @@ int main(int argc, char **argv) {
     // Indicamos como ha de ser la nueva ventana
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+    glutInitDisplayMode(GLUT_DOUBLE);
 
     // Creamos la nueva ventana
     glutCreateWindow("Pendulo Doble");
@@ -204,6 +219,7 @@ int main(int argc, char **argv) {
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
 
     gluOrtho2D(0 - float(W_WINDOW) / 2, float(W_WINDOW) / 2, 0 - float(H_WINDOW) / 2, float(W_WINDOW) / 2);
 
