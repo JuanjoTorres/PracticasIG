@@ -28,7 +28,7 @@ const int W_WINDOW = 2;
 const int H_WINDOW = 2;
 
 const float PI = 3.1415926f;
-const float GRAV = -0.1;
+const float GRAV = -0.001;
 
 const float CENTER_X = 0.0f;
 const float CENTER_Y = 0.0f;
@@ -36,8 +36,8 @@ const float CENTER_Y = 0.0f;
 float innerRadius = 0.4f;
 float outterRadius = 0.4f;
 
-float massInnerBall = 0.1f;
-float massOutterBall = 0.2f;
+float massInnerBall = 40;
+float massOutterBall = 40;
 
 float innerAngle = 0.2f;
 float outterAngle = 0.9f;
@@ -167,7 +167,7 @@ void Idle() {
     outterSpeed += outterAccel;
 
     innerAngle += innerSpeed;
-    outterAngle += innerSpeed;
+    outterAngle += outterSpeed;
 
     posXInner = innerRadius * sin(innerAngle);
     posYInner = innerRadius * cos(innerAngle) + CENTER_Y;
