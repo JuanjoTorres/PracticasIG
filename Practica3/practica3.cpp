@@ -16,6 +16,7 @@
 
 //#include <iostream>
 #include <cmath>
+#include <string>
 
 using namespace std;
 
@@ -57,7 +58,12 @@ float posYOutter;
 float pathXVector[PATH_LENGTH];
 float pathYVector[PATH_LENGTH];
 
+
+int lastTime;
+int elapsedTime;
 int frames;
+int framesElapsed;
+int fps;
 
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
@@ -123,14 +129,23 @@ void drawOutterLine(float initX, float initY, float endX, float endY) {
 }
 
 void drawPath() {
-    for (size_t i = 0; i < PATH_LENGTH; i++) {
-        if (pathXVector[i] != 0.0) {
-            glBegin(GL_POINTS);
-            glColor3f(0.0f, 0.0f, 1.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glBegin(GL_POINTS);
+    for (size_t i = 0; i < PATH_LENGTH; i++)
+        if (pathXVector[i] != 0.0)
             glVertex3f(pathXVector[i], pathYVector[i], 0.0f);
-            glEnd();
-        }
-    }
+    glEnd();
+}
+
+void printFPS() {
+    string textFrames = to_string(fps) + " FPS";
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRasterPos2f(0.8f, -0.9f);
+
+    //glRasterPos2i( 10, 1014 );  // move in 10 pixels from the left and bottom edges
+    for (int i = 0; i < textFrames.length(); ++i)
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, textFrames[i]);
+
 }
 
 // Funcion que visualiza la escena OpenGL
@@ -150,6 +165,8 @@ void Display() {
     drawCircle(posXOutter, posYOutter, -0.97f, 0.97f);
 
     drawPath();
+
+    printFPS();
 
     glutSwapBuffers();
 }
@@ -194,6 +211,15 @@ void Idle() {
     pathYVector[frames % PATH_LENGTH] = posYOutter;
 
     frames++;
+    framesElapsed++;
+
+    elapsedTime = glutGet(GLUT_ELAPSED_TIME);
+
+    if (elapsedTime - lastTime > 1000) {
+        fps = framesElapsed * 1000 / (elapsedTime - lastTime);
+        lastTime = elapsedTime;
+        framesElapsed = 0;
+    }
 
     //Repintar la pantalla
     glutPostRedisplay();
