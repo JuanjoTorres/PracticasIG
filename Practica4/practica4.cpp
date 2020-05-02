@@ -68,7 +68,7 @@ int fps;
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     int i;
-    //NÃºmero de triangulos usados para dibujar el cÃ­rculo
+    //Número de triangulos usados para dibujar el círculo
     int triangleAmount = 50;
 
     GLfloat twicePi = 2.0f * PI;
@@ -77,8 +77,8 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     glVertex2f(x, y); // center of circle
     for (i = 0; i <= triangleAmount; i++) {
         glVertex2f(
-                x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
-                y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
+            x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
+            y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
         );
     }
     glEnd();
@@ -98,17 +98,18 @@ void Reshape(int width, int height) {
         // by a factor of (aspect_viewport/aspect_region)
         glLoadIdentity();
         gluOrtho2D(0 - (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-                   0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-                   float(-H_WINDOW) / 2,
-                   float(H_WINDOW) / 2);
-    } else {
+            0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
+            float(-H_WINDOW) / 2,
+            float(H_WINDOW) / 2);
+    }
+    else {
         //Otherwise, the aspect of the window is lower than aspect of your region,
         // so you should use the full width and scale up the vertical range by (aspect_region/aspect_viewport)
         glLoadIdentity();
         gluOrtho2D(float(-W_WINDOW) / 2,
-                   float(W_WINDOW) / 2,
-                   0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
-                   0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
+            float(W_WINDOW) / 2,
+            0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
+            0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
     }
 
     glViewport(0, 0, width, height);
@@ -154,7 +155,7 @@ void Display() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT);
 
-    //Dibujar punto de anclaje del pÃ©ndulo
+    //Dibujar punto de anclaje del péndulo
     glColor3f(0.0f, 0.0f, 0.0f);
     drawCircle(CENTER_X, CENTER_Y, -0.99f, 0.99f);
 
@@ -178,10 +179,10 @@ void Idle() {
     float num2 = -massOutterBall * GRAV * sin(innerAngle - 2 * outterAngle);
     float num3 = -2 * sin(innerAngle - outterAngle) * massOutterBall;
     float num4 = outterSpeed * outterSpeed * outterRadius +
-                 innerSpeed * innerSpeed * innerRadius * cos(innerAngle - outterAngle);
+        innerSpeed * innerSpeed * innerRadius * cos(innerAngle - outterAngle);
 
     float denom = innerRadius * (2 * massInnerBall + massOutterBall -
-                                 massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
+        massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
 
     innerAccel = (num1 + num2 + num3 * num4) / denom;
 
@@ -191,7 +192,7 @@ void Idle() {
     num4 = outterSpeed * outterSpeed * outterRadius * massOutterBall * cos(innerAngle - outterAngle);
 
     denom = outterRadius * (2 * massInnerBall + massOutterBall -
-                            massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
+        massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
 
     outterAccel = (num1 * (num2 + num3 + num4)) / denom;
 
@@ -226,7 +227,7 @@ void Idle() {
 }
 
 // Funcion principal
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
