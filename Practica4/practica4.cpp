@@ -141,17 +141,17 @@ void render() {
     glutSolidCube(0.5);
 
 
-   glLoadIdentity();
+    glLoadIdentity();
     glTranslatef(-0.5, 0.5, 0.5);
     glutSolidCone(0.2, 0.2, 20, 20);
 
     glLoadIdentity();
     glTranslatef(0.5, -0.5, 0.5);
-    glutSolidCube(0.5);
+    glutWireTorus(0.2, 0.2, 2, 5);
 
     glLoadIdentity();
     glTranslatef(-0.5, -0.5, 0.5);
-    glutSolidCube(0.5);
+    glutWireTeapot(0.2);
 
     printFPS();
     glutSwapBuffers();
