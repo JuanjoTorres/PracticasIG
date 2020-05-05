@@ -129,29 +129,107 @@ void printFPS() {
 
 }
 
+
+
+/**
+ * Pentágono con escalado
+ */
+void paintFigure1() {
+    //Matriz de escalado
+    glPushMatrix();
+
+    //Mover a su cuadrante
+    glTranslatef(-0.5f, 0.5f, 0.0f);
+
+    //Color
+    glColor3f(1.0f, 0.0f, 0.0f);
+
+    glutSolidCube(0.5);
+
+    //Aplicar matrix
+    glPopMatrix();
+}
+
+/**
+ * Triángulo con rotación
+ */
+void paintFigure2() {
+    //Matriz de escalado
+    glPushMatrix();
+
+    //Mover a su cuadrante
+    glTranslatef(0.5f, 0.5f, 0.0f);
+
+    //Color
+    glColor3f(0.0f, 1.0f, 0.0f);
+
+    glutSolidCone(0.2, 0.2, 20, 20);
+
+    //Aplicar matrices
+    glPopMatrix();
+}
+
+/**
+ * Circulo con translación
+ */
+void paintFigure3() {
+
+    glPushMatrix();
+
+    //Mover a su cuadrante
+    glTranslatef(-0.5f, -0.5f, 0.0f);
+
+    //Color
+    glColor3f(0.0f, 0.0f, 1.0f);
+
+    glutWireTorus(0.2, 0.2, 2, 5);
+
+    glPopMatrix();
+}
+
+/**
+ * Cuadrado con rotación y escalado
+ */
+void paintFigure4() {
+    glPushMatrix();
+
+    //Mover a su cuadrante
+    glTranslatef(0.5f, -0.5f, 0.0f);
+
+    //Color
+    glColor3f(1.0f, 0.0f, 1.0f);
+
+    glutWireTeapot(0.2);
+
+    glPopMatrix();
+}
+
+void paintSectors() {
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glVertex2f(-1.0f, 0.0f); // Linea horizontal
+    glVertex2f(1.0f, 0.0f);
+
+    glVertex2f(0.0f, 1.0f); // Linea vertical
+    glVertex2f(0.0f, -1.0f);
+    glEnd();
+}
+
 // Funcion que renderiza la escena OpenGL
 void render() {
 
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glColor3f(1, 0, 0);
-    glLoadIdentity();
-    glTranslatef(0.5, 0.5, 0.5);
-    glutSolidCube(0.5);
 
+    //Pintar las figuras
+    paintFigure1();
+    paintFigure2();
+    paintFigure3();
+    paintFigure4();
 
-    glLoadIdentity();
-    glTranslatef(-0.5, 0.5, 0.5);
-    glutSolidCone(0.2, 0.2, 20, 20);
-
-    glLoadIdentity();
-    glTranslatef(0.5, -0.5, 0.5);
-    glutWireTorus(0.2, 0.2, 2, 5);
-
-    glLoadIdentity();
-    glTranslatef(-0.5, -0.5, 0.5);
-    glutWireTeapot(0.2);
+    //Pintar los separadores de los 4 cuadrantes
+    paintSectors();
 
     printFPS();
     glutSwapBuffers();
@@ -197,7 +275,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Simple GLUT Application");
+    glutCreateWindow("Etapa 3");
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(render);
