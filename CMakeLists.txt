@@ -17,4 +17,8 @@ project(practica3)
 add_executable(pendulum Practica3/practica3.cpp)
 target_link_libraries(pendulum ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
+project(practica4)
+add_executable(practica4 Practica4/practica4.cpp)
+target_link_libraries(pendulum ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
 set(CMAKE_CXX_STANDARD 14)
