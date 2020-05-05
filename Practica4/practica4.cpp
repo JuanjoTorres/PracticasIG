@@ -135,6 +135,23 @@ void render() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glColor3f(1, 0, 0);
+    glLoadIdentity();
+    glTranslatef(0.5, 0.5, 0.5);
+    glutSolidCube(0.5);
+
+
+   glLoadIdentity();
+    glTranslatef(-0.5, 0.5, 0.5);
+    glutSolidCone(0.2, 0.2, 20, 20);
+
+    glLoadIdentity();
+    glTranslatef(0.5, -0.5, 0.5);
+    glutSolidCube(0.5);
+
+    glLoadIdentity();
+    glTranslatef(-0.5, -0.5, 0.5);
+    glutSolidCube(0.5);
 
     printFPS();
     glutSwapBuffers();
@@ -165,7 +182,8 @@ void keyboard(unsigned char c, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-    if (button == GLUT_RIGHT_BUTTON)
+    if (button == GLUT_RIGHT_BUTTON){
+    }
 }
 
 // Funcion principal
