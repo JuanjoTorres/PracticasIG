@@ -59,7 +59,6 @@ float posYOutter;
 float pathXVector[PATH_LENGTH];
 float pathYVector[PATH_LENGTH];
 
-
 int lastTime;
 int elapsedTime;
 int frames;
@@ -72,7 +71,7 @@ void mouse(int button, int state, int x, int y);
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     int i;
-    //Número de triangulos usados para dibujar el círculo
+    //NÃºmero de triangulos usados para dibujar el cÃ­rculo
     int triangleAmount = 50;
 
     GLfloat twicePi = 2.0f * PI;
@@ -81,8 +80,8 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     glVertex2f(x, y); // center of circle
     for (i = 0; i <= triangleAmount; i++) {
         glVertex2f(
-            x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
-            y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
+                x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
+                y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
         );
     }
     glEnd();
@@ -102,18 +101,17 @@ void reshape(int width, int height) {
         // by a factor of (aspect_viewport/aspect_region)
         glLoadIdentity();
         gluOrtho2D(0 - (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-            0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-            float(-H_WINDOW) / 2,
-            float(H_WINDOW) / 2);
-    }
-    else {
+                   0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
+                   float(-H_WINDOW) / 2,
+                   float(H_WINDOW) / 2);
+    } else {
         //Otherwise, the aspect of the window is lower than aspect of your region,
         // so you should use the full width and scale up the vertical range by (aspect_region/aspect_viewport)
         glLoadIdentity();
         gluOrtho2D(float(-W_WINDOW) / 2,
-            float(W_WINDOW) / 2,
-            0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
-            0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
+                   float(W_WINDOW) / 2,
+                   0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
+                   0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
     }
 
     glViewport(0, 0, width, height);
@@ -136,7 +134,6 @@ void render() {
 
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 
     printFPS();
@@ -172,7 +169,7 @@ void mouse(int button, int state, int x, int y) {
 }
 
 // Funcion principal
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
