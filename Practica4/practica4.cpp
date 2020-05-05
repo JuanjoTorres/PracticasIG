@@ -17,11 +17,12 @@
 //#include <iostream>
 #include <cmath>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
-const int W_WIDTH = 500;
-const int W_HEIGHT = 500;
+const int W_WIDTH = 640;
+const int W_HEIGHT = 480;
 
 const int W_WINDOW = 2;
 const int H_WINDOW = 2;
@@ -65,6 +66,9 @@ int frames;
 int framesElapsed;
 int fps;
 
+void render(void);
+void keyboard(unsigned char c, int x, int y);
+void mouse(int button, int state, int x, int y);
 
 void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     int i;
@@ -84,7 +88,7 @@ void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
     glEnd();
 }
 
-void Reshape(int width, int height) {
+void reshape(int width, int height) {
 
     if (height == 0)
         height = 1;
@@ -115,28 +119,6 @@ void Reshape(int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void drawInnerLine(float x, float y) {
-    glBegin(GL_LINES);
-    glVertex2d(CENTER_X, CENTER_Y);
-    glVertex2d(x, y);
-    glEnd();
-}
-
-void drawOutterLine(float initX, float initY, float endX, float endY) {
-    glBegin(GL_LINES);
-    glVertex2d(initX, initY);
-    glVertex2d(endX, endY);
-    glEnd();
-}
-
-void drawPath() {
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glBegin(GL_POINTS);
-    for (size_t i = 0; i < PATH_LENGTH; i++)
-        if (pathXVector[i] != 0.0)
-            glVertex3f(pathXVector[i], pathYVector[i], 0.0f);
-    glEnd();
-}
 
 void printFPS() {
     string textFrames = to_string(fps) + " FPS";
@@ -149,67 +131,20 @@ void printFPS() {
 
 }
 
-// Funcion que visualiza la escena OpenGL
-void Display() {
+// Funcion que renderiza la escena OpenGL
+void render() {
 
     // Borramos la escena
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Dibujar punto de anclaje del péndulo
-    glColor3f(0.0f, 0.0f, 0.0f);
-    drawCircle(CENTER_X, CENTER_Y, -0.99f, 0.99f);
 
-    drawInnerLine(posXInner, posYInner);
-    drawCircle(posXInner, posYInner, -0.98f, 0.98f);
-
-    drawOutterLine(posXInner, posYInner, posXOutter, posYOutter);
-    drawCircle(posXOutter, posYOutter, -0.97f, 0.97f);
-
-    drawPath();
 
     printFPS();
-
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
-void Idle() {
-
-    float num1 = -GRAV * (2 * massInnerBall + massOutterBall) * sin(innerAngle);
-    float num2 = -massOutterBall * GRAV * sin(innerAngle - 2 * outterAngle);
-    float num3 = -2 * sin(innerAngle - outterAngle) * massOutterBall;
-    float num4 = outterSpeed * outterSpeed * outterRadius +
-        innerSpeed * innerSpeed * innerRadius * cos(innerAngle - outterAngle);
-
-    float denom = innerRadius * (2 * massInnerBall + massOutterBall -
-        massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
-
-    innerAccel = (num1 + num2 + num3 * num4) / denom;
-
-    num1 = 2 * sin(innerAngle - outterAngle);
-    num2 = (innerSpeed * innerSpeed * innerRadius * (massInnerBall + massOutterBall));
-    num3 = GRAV * (massInnerBall + massOutterBall) * cos(innerAngle);
-    num4 = outterSpeed * outterSpeed * outterRadius * massOutterBall * cos(innerAngle - outterAngle);
-
-    denom = outterRadius * (2 * massInnerBall + massOutterBall -
-        massOutterBall * cos(2 * innerAngle - 2 * outterAngle));
-
-    outterAccel = (num1 * (num2 + num3 + num4)) / denom;
-
-    innerSpeed += innerAccel;
-    outterSpeed += outterAccel;
-
-    innerAngle += innerSpeed;
-    outterAngle += outterSpeed;
-
-    posXInner = innerRadius * sin(innerAngle);
-    posYInner = innerRadius * cos(innerAngle) + CENTER_Y;
-
-    posXOutter = posXInner + outterRadius * sin(outterAngle);
-    posYOutter = posYInner + outterRadius * cos(outterAngle);
-
-    pathXVector[frames % PATH_LENGTH] = posXOutter;
-    pathYVector[frames % PATH_LENGTH] = posYOutter;
+void idle() {
 
     frames++;
     framesElapsed++;
@@ -226,6 +161,16 @@ void Idle() {
     glutPostRedisplay();
 }
 
+void keyboard(unsigned char c, int x, int y) {
+    if (c == 27) {
+        exit(0);
+    }
+}
+
+void mouse(int button, int state, int x, int y) {
+    if (button == GLUT_RIGHT_BUTTON)
+}
+
 // Funcion principal
 int main(int argc, char** argv) {
     // Inicializamos la libreria GLUT
@@ -234,15 +179,15 @@ int main(int argc, char** argv) {
     // Indicamos como ha de ser la nueva ventana
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
-    glutInitDisplayMode(GLUT_DOUBLE);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Pendulo Doble");
+    glutCreateWindow("Simple GLUT Application");
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
-    glutDisplayFunc(Display);
-    glutIdleFunc(Idle);
-    glutReshapeFunc(Reshape);
+    glutDisplayFunc(render);
+    glutIdleFunc(idle);
+    glutReshapeFunc(reshape);
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -250,7 +195,7 @@ int main(int argc, char** argv) {
 
     gluOrtho2D(0 - float(W_WINDOW) / 2, float(W_WINDOW) / 2, 0 - float(H_WINDOW) / 2, float(W_WINDOW) / 2);
 
-    // Comienza la ejecucion del core de GLUT
+    // Comienza la ejecucion del core de GLUT (RENDERING)
     glutMainLoop();
 
     return 0;
