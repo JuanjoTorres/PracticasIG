@@ -221,12 +221,18 @@ void render() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glMatrixMode(GL_PROJECTION);
+    glFrustum(25, 25, 25, 25, 10, 50);
 
+    glPushMatrix();
+    
     //Pintar las figuras
     paintFigure1();
     paintFigure2();
     paintFigure3();
     paintFigure4();
+
+    glPopMatrix();
 
     //Pintar los separadores de los 4 cuadrantes
     paintSectors();
@@ -273,6 +279,8 @@ int main(int argc, char **argv) {
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+
+    glEnable(GL_DEPTH_TEST);
 
     // Creamos la nueva ventana
     glutCreateWindow("Etapa 3");
