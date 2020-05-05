@@ -65,63 +65,59 @@ int frames;
 int framesElapsed;
 int fps;
 
-void render(void);
-void keyboard(unsigned char c, int x, int y);
-void mouse(int button, int state, int x, int y);
+int projectionMode = 1;
 
-void drawCircle(GLfloat x, GLfloat y, GLfloat xcenter, GLfloat ycenter) {
-    int i;
-    //Número de triangulos usados para dibujar el círculo
-    int triangleAmount = 50;
+GLfloat near = 0.1f;
+GLfloat far = 100.0f;
+GLfloat fov = 45.0f;
 
-    GLfloat twicePi = 2.0f * PI;
+void reshape(GLsizei width, GLsizei height) {
 
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(x, y); // center of circle
-    for (i = 0; i <= triangleAmount; i++) {
-        glVertex2f(
-                x + ((xcenter + 1) * cos(float(i) * twicePi / float(triangleAmount))),
-                y + ((ycenter - 1) * sin(float(i) * twicePi / float(triangleAmount)))
-        );
-    }
-    glEnd();
-}
+    GLfloat aspect = (GLfloat) width / (GLfloat) height;
 
-void reshape(int width, int height) {
-
-    if (height == 0)
-        height = 1;
-
-    float aspectViewport = float(width) / float(height);
-    float aspectWindow = float(W_WINDOW) / float(H_WINDOW);
-
-    if (aspectViewport > aspectWindow) {
-        //the aspect of the viewport is greater than the aspect of your region, so it is wider.
-        // In that case, you should map the full height and increase the horitonal range
-        // by a factor of (aspect_viewport/aspect_region)
-        glLoadIdentity();
-        gluOrtho2D(0 - (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-                   0 + (W_WINDOW * (aspectViewport / aspectWindow)) / 2,
-                   float(-H_WINDOW) / 2,
-                   float(H_WINDOW) / 2);
-    } else {
-        //Otherwise, the aspect of the window is lower than aspect of your region,
-        // so you should use the full width and scale up the vertical range by (aspect_region/aspect_viewport)
-        glLoadIdentity();
-        gluOrtho2D(float(-W_WINDOW) / 2,
-                   float(W_WINDOW) / 2,
-                   0 - (H_WINDOW * (aspectWindow / aspectViewport)) / 2,
-                   0 + (H_WINDOW * (aspectWindow / aspectViewport)) / 2);
-    }
+    cout << "Aspect: " << aspect << endl;
 
     glViewport(0, 0, width, height);
+
+    glMatrixMode(GL_PROJECTION);   // Select Projection matrix
+    glLoadIdentity();              // Reset the Projection matrix
+
+    if (projectionMode == 0) {
+
+        if (width <= height) {
+            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, near, far);  // aspect <= 1
+        } else {
+            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, near, far);  // aspect > 1
+        }
+
+    } else if (projectionMode == 1) {
+
+        GLfloat top = (GLfloat) tan(fov * 0.5) * near;
+        GLfloat bottom = -top;
+        GLfloat left = aspect * bottom;
+        GLfloat right = aspect * top;
+
+        cout << "Top: " << top << endl;
+        cout << "Bottom: " << bottom << endl;
+        cout << "Left: " << left << endl;
+        cout << "Right: " << right << endl;
+
+        glFrustum(left, right, bottom, top, near, far);
+    } else {
+        gluPerspective(fov, aspect, near, far);
+    }
+
+    //Posicionar la cámara
+    gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+
+    glMatrixMode(GL_MODELVIEW);
 }
 
 
 void printFPS() {
     string textFrames = to_string(fps) + " FPS";
     glColor3f(0.0f, 0.0f, 0.0f);
-    glRasterPos2f(0.8f, -0.9f);
+    glRasterPos3f(0.8f, -0.9f, -1.0f);
 
     //glRasterPos2i( 10, 1014 );  // move in 10 pixels from the left and bottom edges
     for (int i = 0; i < textFrames.length(); ++i)
@@ -130,89 +126,43 @@ void printFPS() {
 }
 
 
-
 /**
- * Pentágono con escalado
+ * Figura cercana --> DONUTS
  */
-void paintFigure1() {
+void paintNearFigure() {
     //Matriz de escalado
     glPushMatrix();
 
-    //Mover a su cuadrante
-    glTranslatef(-0.5f, 0.5f, 0.0f);
+    //Mover a posicion cercana
+    glTranslatef(-0.4f, 0.0f, -1.0f);
 
     //Color
-    glColor3f(1.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 0.0f);
 
-    glutSolidCube(0.5);
+    glutSolidTorus(0.3, 0.5, 32, 32);
 
     //Aplicar matrix
     glPopMatrix();
 }
 
 /**
- * Triángulo con rotación
+ * Figura lejana --> TETERA
  */
-void paintFigure2() {
+void paintFarFigure() {
     //Matriz de escalado
     glPushMatrix();
 
-    //Mover a su cuadrante
-    glTranslatef(0.5f, 0.5f, 0.0f);
+    //Mover a posicion lejana
+    glTranslatef(0.5f, 0.0f, -3.0f);
 
     //Color
-    glColor3f(0.0f, 1.0f, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
 
-    glutSolidCone(0.2, 0.2, 20, 20);
+    //glutSolidTorus(0.3, 0.5, 32, 32);
+    glutSolidTeapot(1.0);
 
     //Aplicar matrices
     glPopMatrix();
-}
-
-/**
- * Circulo con translación
- */
-void paintFigure3() {
-
-    glPushMatrix();
-
-    //Mover a su cuadrante
-    glTranslatef(-0.5f, -0.5f, 0.0f);
-
-    //Color
-    glColor3f(0.0f, 0.0f, 1.0f);
-
-    glutWireTorus(0.2, 0.2, 2, 5);
-
-    glPopMatrix();
-}
-
-/**
- * Cuadrado con rotación y escalado
- */
-void paintFigure4() {
-    glPushMatrix();
-
-    //Mover a su cuadrante
-    glTranslatef(0.5f, -0.5f, 0.0f);
-
-    //Color
-    glColor3f(1.0f, 0.0f, 1.0f);
-
-    glutWireTeapot(0.2);
-
-    glPopMatrix();
-}
-
-void paintSectors() {
-    glBegin(GL_LINES);
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glVertex2f(-1.0f, 0.0f); // Linea horizontal
-    glVertex2f(1.0f, 0.0f);
-
-    glVertex2f(0.0f, 1.0f); // Linea vertical
-    glVertex2f(0.0f, -1.0f);
-    glEnd();
 }
 
 // Funcion que renderiza la escena OpenGL
@@ -221,21 +171,9 @@ void render() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glMatrixMode(GL_PROJECTION);
-    glFrustum(25, 25, 25, 25, 10, 50);
-
-    glPushMatrix();
-    
-    //Pintar las figuras
-    paintFigure1();
-    paintFigure2();
-    paintFigure3();
-    paintFigure4();
-
-    glPopMatrix();
-
-    //Pintar los separadores de los 4 cuadrantes
-    paintSectors();
+    //Pintar las figuras cercana y lejana
+    paintNearFigure();
+    paintFarFigure();
 
     printFPS();
     glutSwapBuffers();
@@ -266,8 +204,14 @@ void keyboard(unsigned char c, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-    if (button == GLUT_RIGHT_BUTTON){
+    if (button == GLUT_RIGHT_BUTTON) {
+
     }
+}
+
+void switchProyection(int value) {
+    projectionMode = value;
+    reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 }
 
 // Funcion principal
@@ -275,29 +219,44 @@ int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
-    // Indicamos como ha de ser la nueva ventana
-    glutInitWindowPosition(100, 100);
+    // Indicamos posición y tamaño de la ventana
+    glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - W_WIDTH) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - W_HEIGHT) / 2);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
-    glEnable(GL_DEPTH_TEST);
-
     // Creamos la nueva ventana
     glutCreateWindow("Etapa 3");
+
+    //Configurar menu
+    glutCreateMenu(switchProyection);
+    glutAddMenuEntry("GL_ORTHO", 0);
+    glutAddMenuEntry("GL_FRUSTUM", 1);
+    glutAddMenuEntry("GL_PERSPECTIVE", 2);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+    //Configurar luces
+    GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
+    GLfloat lightColor[] = {1.0, 1.0, 0.0, 0.0};
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+    glEnable(GL_LIGHT0);
+
+    // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    //Habilitar
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(render);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
 
-    // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-
-    gluOrtho2D(0 - float(W_WINDOW) / 2, float(W_WINDOW) / 2, 0 - float(H_WINDOW) / 2, float(W_WINDOW) / 2);
-
     // Comienza la ejecucion del core de GLUT (RENDERING)
     glutMainLoop();
-
     return 0;
 }
