@@ -40,7 +40,7 @@ GLfloat fov = 45.0f;
 
 void reshape(GLsizei width, GLsizei height) {
 
-    GLfloat aspect = (GLfloat) width / (GLfloat) height;
+    GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
     cout << "Aspect: " << aspect << endl;
 
@@ -53,13 +53,15 @@ void reshape(GLsizei width, GLsizei height) {
 
         if (width <= height) {
             glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, nearFace, farFace);  // aspect <= 1
-        } else {
+        }
+        else {
             glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, nearFace, farFace);  // aspect > 1
         }
 
-    } else if (projectionMode == 1) {
+    }
+    else if (projectionMode == 1) {
 
-        GLfloat top = (GLfloat) tan(fov * 0.5) * nearFace;
+        GLfloat top = (GLfloat)tan(fov * 0.5) * nearFace;
         GLfloat bottom = -top;
         GLfloat left = aspect * bottom;
         GLfloat right = aspect * top;
@@ -70,11 +72,12 @@ void reshape(GLsizei width, GLsizei height) {
         cout << "Right: " << right << endl;
 
         glFrustum(left, right, bottom, top, nearFace, farFace);
-    } else {
+    }
+    else {
         gluPerspective(fov, aspect, nearFace, farFace);
     }
 
-    // Posicionar la cÃ¡mara
+    // Posicionar la cámara
     gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
 
     glMatrixMode(GL_MODELVIEW);
@@ -171,11 +174,11 @@ void switchProyection(int value) {
 }
 
 // Funcion principal
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
-    // Indicamos posiciÃ³n y tamaÃ±o de la ventana
+    // Indicamos posición y tamaño de la ventana
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - W_WIDTH) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - W_HEIGHT) / 2);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -191,8 +194,8 @@ int main(int argc, char **argv) {
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
     //Configurar luces
-    GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
-    GLfloat lightColor[] = {1.0, 1.0, 0.0, 0.0};
+    GLfloat lightPosition[] = { 10.0, 10.0, 10.0, 1.0 };
+    GLfloat lightColor[] = { 1.0, 1.0, 0.0, 0.0 };
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
