@@ -21,54 +21,22 @@
 
 using namespace std;
 
-const int W_WIDTH = 640;
-const int W_HEIGHT = 480;
+const GLint W_WIDTH = 640;
+const GLint W_HEIGHT = 480;
 
-const int W_WINDOW = 2;
-const int H_WINDOW = 2;
+const GLint W_WINDOW = 2;
+const GLint H_WINDOW = 2;
 
-const int PATH_LENGTH = 1000;
+GLint lastTime;
+GLint elapsedTime;
+GLint frames;
+GLint framesElapsed;
+GLint fps;
 
-const float PI = 3.1415926f;
-const float GRAV = -0.00001;
+GLint projectionMode = 1;
 
-const float CENTER_X = 0.0f;
-const float CENTER_Y = 0.5f;
-
-float innerRadius = 0.5f;
-float outterRadius = 0.5f;
-
-float massInnerBall = 40;
-float massOutterBall = 40;
-
-float innerAngle = PI / 2;
-float outterAngle = PI / 2;
-
-float innerAccel = 0.0f;
-float outterAccel = 0.0f;
-
-float innerSpeed = 0.0f;
-float outterSpeed = 0.0f;
-
-float posXInner;
-float posYInner;
-
-float posXOutter;
-float posYOutter;
-
-float pathXVector[PATH_LENGTH];
-float pathYVector[PATH_LENGTH];
-
-int lastTime;
-int elapsedTime;
-int frames;
-int framesElapsed;
-int fps;
-
-int projectionMode = 1;
-
-GLfloat near = 0.1f;
-GLfloat far = 100.0f;
+GLfloat nearFace = 0.1f;
+GLfloat farFace = 100.0f;
 GLfloat fov = 45.0f;
 
 void reshape(GLsizei width, GLsizei height) {
@@ -85,14 +53,14 @@ void reshape(GLsizei width, GLsizei height) {
     if (projectionMode == 0) {
 
         if (width <= height) {
-            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, near, far);  // aspect <= 1
+            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, nearFace, farFace);  // aspect <= 1
         } else {
-            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, near, far);  // aspect > 1
+            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, nearFace, farFace);  // aspect > 1
         }
 
     } else if (projectionMode == 1) {
 
-        GLfloat top = (GLfloat) tan(fov * 0.5) * near;
+        GLfloat top = (GLfloat) tan(fov * 0.5) * nearFace;
         GLfloat bottom = -top;
         GLfloat left = aspect * bottom;
         GLfloat right = aspect * top;
@@ -102,12 +70,12 @@ void reshape(GLsizei width, GLsizei height) {
         cout << "Left: " << left << endl;
         cout << "Right: " << right << endl;
 
-        glFrustum(left, right, bottom, top, near, far);
+        glFrustum(left, right, bottom, top, nearFace, farFace);
     } else {
-        gluPerspective(fov, aspect, near, far);
+        gluPerspective(fov, aspect, nearFace, farFace);
     }
 
-    //Posicionar la cámara
+    // Posicionar la cámara
     gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
 
     glMatrixMode(GL_MODELVIEW);
@@ -126,29 +94,24 @@ void printFPS() {
 }
 
 
-/**
- * Figura cercana --> DONUTS
- */
-void paintNearFigure() {
-    //Matriz de escalado
+// FIGURA CERCANA (TORUS)
+void paintTorus() {
+    // Matriz de escalado
     glPushMatrix();
 
-    //Mover a posicion cercana
+    // Mover a posicion cercana
     glTranslatef(-0.4f, 0.0f, -1.0f);
 
-    //Color
+    // Color
     glColor3f(0.0f, 0.0f, 0.0f);
-
     glutSolidTorus(0.3, 0.5, 32, 32);
 
-    //Aplicar matrix
+    // Aplicar matrix
     glPopMatrix();
 }
 
-/**
- * Figura lejana --> TETERA
- */
-void paintFarFigure() {
+// FIGURA LEJANA (TEAPOT)
+void paintTeapot() {
     //Matriz de escalado
     glPushMatrix();
 
@@ -172,8 +135,8 @@ void render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Pintar las figuras cercana y lejana
-    paintNearFigure();
-    paintFarFigure();
+    paintTorus();
+    paintTeapot();
 
     printFPS();
     glutSwapBuffers();
@@ -200,12 +163,6 @@ void idle() {
 void keyboard(unsigned char c, int x, int y) {
     if (c == 27) {
         exit(0);
-    }
-}
-
-void mouse(int button, int state, int x, int y) {
-    if (button == GLUT_RIGHT_BUTTON) {
-
     }
 }
 
