@@ -26,6 +26,8 @@ const GLint W_HEIGHT = 480;
 const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
 
+double rx = 0, ry = 0, rz = 1, px = 0, py = 0, pz = 0, nx = 0, ny = 1, nz = 0;
+
 GLint lastTime;
 GLint elapsedTime;
 GLint frames;
@@ -78,7 +80,7 @@ void reshape(GLsizei width, GLsizei height) {
     }
 
     // Posicionar la cámara
-    gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+    gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
 
     glMatrixMode(GL_MODELVIEW);
 }
@@ -162,9 +164,23 @@ void idle() {
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char c, int x, int y) {
-    if (c == 27) {
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+    case 27:
         exit(0);
+        break;
+    case 'w':
+        printf("w");
+        rz = rz - 0.1;
+        gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
+        printf("rz = %.7lf\n", rz);
+        break;
+    case 's':
+        printf("s");
+        rz = rz + 0.1;
+        gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
+        printf("rz = %.7lf\n", rz);
+        break;
     }
 }
 
@@ -184,7 +200,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Etapa 3");
+    glutCreateWindow("Etapa 4");
 
     //Configurar menu
     glutCreateMenu(switchProyection);
@@ -211,6 +227,7 @@ int main(int argc, char** argv) {
     glEnable(GL_LIGHTING);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
+    glutKeyboardFunc(keyboard);
     glutDisplayFunc(render);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
