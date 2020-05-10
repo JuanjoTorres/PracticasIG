@@ -28,17 +28,32 @@ const GLint H_WINDOW = 2;
 
 double rx = 0, ry = 0, rz = 1, px = 0, py = 0, pz = 0, nx = 0, ny = 1, nz = 0;
 
+// Control de frames
 GLint lastTime;
 GLint elapsedTime;
 GLint frames;
 GLint framesElapsed;
 GLint fps;
 
+// Control de la proyeccion
 GLint projectionMode = 1;
 
 GLfloat NEARFACE = 0.1f;
 GLfloat FARFACE = 100.0f;
 GLfloat FOV = 45.0f;
+
+// Control de la camara
+GLfloat cameraPositionX = 0.0f;
+GLfloat cameraPositionY = 1.0f;
+GLfloat cameraPositionZ = 5.0f;
+
+GLfloat lookDirectionX  = 0.0f;
+GLfloat lookDirectionY  = 0.0f;
+GLfloat lookDirectionZ  = 1.0f;
+
+GLfloat const SPEED = 0.1;
+GLfloat yawAxis     = 0.0f;
+GLfloat pitchAxis   = 0.0f;
 
 void reshape(GLsizei width, GLsizei height) {
 
@@ -80,7 +95,7 @@ void reshape(GLsizei width, GLsizei height) {
     }
 
     // Posicionar la cámara
-    gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
+    //gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
 
     glMatrixMode(GL_MODELVIEW);
 }
@@ -159,6 +174,16 @@ void render() {
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glLoadIdentity();  
+    // Resetear transformaciones
+    gluLookAt(cameraPositionX, cameraPositionY, cameraPositionZ,  // Posicion de la camara
+              cameraPositionX + lookDirectionX,                   // Dirección donde apunta la camara
+              cameraPositionY + lookDirectionY,
+              cameraPositionZ + lookDirectionZ,
+              0.0f, 1.0f, 0.0f);                                  // Vector de rotacion
+
+    // Pintar suelo
+
     //Pintar las figuras cercana y lejana
     paintTorus();
     paintTeapot();
@@ -185,25 +210,38 @@ void idle() {
     glutPostRedisplay();
 }
 
-void flechas(int key, int x, int y) {
-    switch (key) {
-    case GLUT_KEY_UP:
-        rz = rz - 0.1;
-        gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
-        printf("rz = %.7lf\n", rz);
-        break;
-    case GLUT_KEY_DOWN:
-        rz = rz + 0.1;
-        gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
-        printf("rz = %.7lf\n", rz);
-        break;
-    }
-}
-
-
 void keyboard(unsigned char key, int x, int y) {
-     if (key == 27) {   // esc
-        exit(0);
+    switch (key) {
+    case 'a':
+        yawAxis -= 0.01f;
+        lookDirectionX =  sin(yawAxis);
+        lookDirectionZ = -cos(yawAxis);
+        break;
+    case 'w':
+        cameraPositionX += lookDirectionX * SPEED;
+        cameraPositionY += lookDirectionY * SPEED;
+        cameraPositionZ += lookDirectionZ * SPEED;
+        break;
+    case 's':
+        cameraPositionX -= lookDirectionX * SPEED;
+        cameraPositionY -= lookDirectionY * SPEED;
+        cameraPositionZ -= lookDirectionZ * SPEED;
+        break;
+    case 'd':
+        yawAxis += 0.01f;
+        lookDirectionX = sin(yawAxis);
+        lookDirectionZ = -cos(yawAxis);
+        break;
+    case 'e':
+        pitchAxis += 0.01f;
+        lookDirectionZ = -cos(pitchAxis); 
+        lookDirectionY = sin(pitchAxis);
+        break;
+    case 'r':
+        pitchAxis -= 0.01f;
+        lookDirectionZ = -cos(pitchAxis);
+        lookDirectionY = sin(pitchAxis);
+        break;
     }
 }
 
@@ -244,14 +282,13 @@ int main(int argc, char** argv) {
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    //Habilitar
-    glEnable(GL_CULL_FACE);
+    // Habilitar
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
-    glutSpecialFunc(flechas);
     glutDisplayFunc(render);
+    glutKeyboardFunc(keyboard);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
 
