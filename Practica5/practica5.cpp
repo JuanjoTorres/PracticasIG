@@ -36,9 +36,9 @@ GLint fps;
 
 GLint projectionMode = 1;
 
-GLfloat nearFace = 0.1f;
-GLfloat farFace = 100.0f;
-GLfloat fov = 45.0f;
+GLfloat NEARFACE = 0.1f;
+GLfloat FARFACE = 100.0f;
+GLfloat FOV = 45.0f;
 
 void reshape(GLsizei width, GLsizei height) {
 
@@ -54,16 +54,16 @@ void reshape(GLsizei width, GLsizei height) {
     if (projectionMode == 0) {
 
         if (width <= height) {
-            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, nearFace, farFace);  // aspect <= 1
+            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, NEARFACE, FARFACE);  // aspect <= 1
         }
         else {
-            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, nearFace, farFace);  // aspect > 1
+            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, NEARFACE, FARFACE);  // aspect > 1
         }
 
     }
     else if (projectionMode == 1) {
 
-        GLfloat top = (GLfloat)tan(fov * 0.5) * nearFace;
+        GLfloat top = (GLfloat)tan(FOV * 0.5) * NEARFACE;
         GLfloat bottom = -top;
         GLfloat left = aspect * bottom;
         GLfloat right = aspect * top;
@@ -73,10 +73,10 @@ void reshape(GLsizei width, GLsizei height) {
         cout << "Left: " << left << endl;
         cout << "Right: " << right << endl;
 
-        glFrustum(left, right, bottom, top, nearFace, farFace);
+        glFrustum(left, right, bottom, top, NEARFACE, FARFACE);
     }
     else {
-        gluPerspective(fov, aspect, nearFace, farFace);
+        gluPerspective(FOV, aspect, NEARFACE, FARFACE);
     }
 
     // Posicionar la cámara
@@ -85,6 +85,27 @@ void reshape(GLsizei width, GLsizei height) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+void paintGrid() {
+    for (int i = 0; i < 40; i++) {
+
+        glPushMatrix();
+
+        if (i < 20)
+            glTranslatef(0, 0, i);
+        if (i >= 20) {
+            glTranslatef(i - 20, 0, 0);
+            glRotatef(-90, 0, 1, 0);
+        }
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glLineWidth(1);
+        glBegin(GL_LINES);
+        glVertex3f(0.0f, -0.1f, 0.0f);
+        glVertex3f(19.0f, -0.1f, 0.0f);
+        glEnd();
+        glPopMatrix();
+    }
+}
 
 void printFPS() {
     string textFrames = to_string(fps) + " FPS";
