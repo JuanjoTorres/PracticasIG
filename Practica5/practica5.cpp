@@ -185,23 +185,25 @@ void idle() {
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void flechas(int key, int x, int y) {
     switch (key) {
-    case 27:
-        exit(0);
-        break;
-    case 'w':
-        printf("w");
+    case GLUT_KEY_UP:
         rz = rz - 0.1;
         gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
         printf("rz = %.7lf\n", rz);
         break;
-    case 's':
-        printf("s");
+    case GLUT_KEY_DOWN:
         rz = rz + 0.1;
         gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
         printf("rz = %.7lf\n", rz);
         break;
+    }
+}
+
+
+void keyboard(unsigned char key, int x, int y) {
+     if (key == 27) {   // esc
+        exit(0);
     }
 }
 
@@ -248,7 +250,7 @@ int main(int argc, char** argv) {
     glEnable(GL_LIGHTING);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
-    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(flechas);
     glutDisplayFunc(render);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
