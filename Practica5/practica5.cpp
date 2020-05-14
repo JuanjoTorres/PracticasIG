@@ -26,8 +26,6 @@ const GLint W_HEIGHT = 480;
 const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
 
-double rx = 0, ry = 0, rz = 1, px = 0, py = 0, pz = 0, nx = 0, ny = 1, nz = 0;
-
 // Control de frames
 GLint lastTime;
 GLint elapsedTime;
@@ -44,12 +42,12 @@ GLfloat FOV = 45.0f;
 
 // Control de la camara
 GLfloat cameraPositionX = 0.0f;
-GLfloat cameraPositionY = 1.0f;
-GLfloat cameraPositionZ = 5.0f;
+GLfloat cameraPositionY = 0.0f;
+GLfloat cameraPositionZ = 1.0f;
 
 GLfloat lookDirectionX  = 0.0f;
 GLfloat lookDirectionY  = 0.0f;
-GLfloat lookDirectionZ  = 1.0f;
+GLfloat lookDirectionZ  = -1.0f;
 
 GLfloat const SPEED = 0.1;
 GLfloat yawAxis     = 0.0f;
