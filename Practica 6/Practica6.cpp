@@ -208,34 +208,28 @@ void idle() {
     glutPostRedisplay();
 }
 
-void flechas(int key, int x, int y) {
+void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-    case GLUT_KEY_LEFT:
+    case 'a':
         yawAxis -= 0.01f;
         lookDirectionX = sin(yawAxis);
         lookDirectionZ = -cos(yawAxis);
         break;
-    case GLUT_KEY_UP:
+    case 'w':
         cameraPositionX += lookDirectionX * SPEED;
         cameraPositionY += lookDirectionY * SPEED;
         cameraPositionZ += lookDirectionZ * SPEED;
         break;
-    case GLUT_KEY_DOWN:
+    case 's':
         cameraPositionX -= lookDirectionX * SPEED;
         cameraPositionY -= lookDirectionY * SPEED;
         cameraPositionZ -= lookDirectionZ * SPEED;
         break;
-    case GLUT_KEY_RIGHT:
+    case 'd':
         yawAxis += 0.01f;
         lookDirectionX = sin(yawAxis);
         lookDirectionZ = -cos(yawAxis);
         break;
-    }
-}
-
-void keyboard(unsigned char key, int x, int y) {
-    switch (key) {
-        // movimiento camara
     case 'e':
         pitchAxis += 0.01f;
         lookDirectionZ = -cos(pitchAxis);
@@ -246,7 +240,6 @@ void keyboard(unsigned char key, int x, int y) {
         lookDirectionZ = -cos(pitchAxis);
         lookDirectionY = sin(pitchAxis);
         break;
-        // movimiento luces
     }
 }
 
@@ -266,7 +259,7 @@ int main(int argc, char** argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Etapa 5");
+    glutCreateWindow("Etapa 4");
 
     //Configurar menu
     glutCreateMenu(switchProyection);
@@ -290,12 +283,9 @@ int main(int argc, char** argv) {
     // Habilitar
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
-    glEnable(GL_COLOR_MATERIAL);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(render);
-    glutSpecialFunc(flechas);
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
