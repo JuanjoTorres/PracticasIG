@@ -33,6 +33,9 @@ GLint frames;
 GLint framesElapsed;
 GLint fps;
 
+// Sombreado
+GLint shadeModel = 0;   // 0 = GL_FLAT, 1 = GL_SMOOTH
+
 // Control de la proyeccion
 GLint projectionMode = 1;
 
@@ -96,6 +99,15 @@ void reshape(GLsizei width, GLsizei height) {
     //gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
 
     glMatrixMode(GL_MODELVIEW);
+}
+
+void cambiarSombreado() {
+    if (shadeModel == 0) {
+        glShadeModel(GL_FLAT);
+    }
+    else {
+        glShadeModel(GL_SMOOTH);
+    }
 }
 
 void paintGrid() {
@@ -186,6 +198,12 @@ void render() {
     paintTorus();
     paintTeapot();
 
+    // Sombreado
+    cambiarSombreado();
+    // Creamos un foco de luz
+    glLightf(1.0, GL_SPOT_EXPONENT, 1.0);
+
+
     printFPS();
     glutSwapBuffers();
 }
@@ -208,7 +226,7 @@ void idle() {
     glutPostRedisplay();
 }
 
-void flechas(int key, int x, int y) {
+void teclasEspeciales(int key, int x, int y) {
     switch (key) {
     case GLUT_KEY_LEFT:
         yawAxis -= 0.01f;
@@ -247,6 +265,15 @@ void keyboard(unsigned char key, int x, int y) {
         lookDirectionY = sin(pitchAxis);
         break;
         // movimiento luces
+    case 32:    // tecla espacio
+        if (shadeModel == 0) {
+            shadeModel = 1;
+        }
+        else {
+            shadeModel = 0;
+        }
+        // cambiamos el sombreado
+        cambiarSombreado();
     }
 }
 
@@ -291,11 +318,12 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHT0);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     // Indicamos cuales son las funciones de redibujado, idle y reshape
     glutDisplayFunc(render);
-    glutSpecialFunc(flechas);
+    glutSpecialFunc(teclasEspeciales);
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idle);
     glutReshapeFunc(reshape);
