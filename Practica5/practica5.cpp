@@ -106,10 +106,10 @@ void render() {
     vector <float> cameraRotation = cameras[selectedCamera]-> getRotation();
 
     gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],  // Posicion de la camara
-              cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
-              cameraPosition[1] + lookDirection[1],
-              cameraPosition[2] + lookDirection[2],
-              cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
+        cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
+        cameraPosition[1] + lookDirection[1],
+        cameraPosition[2] + lookDirection[2],
+        cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
 
     // Pintar suelo
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -142,6 +142,18 @@ void processSpecialKeys(int key, int x, int y) {
         break;
     case GLUT_KEY_F4:
         selectedCamera = SIDE_VIEW;
+        break;
+    case GLUT_KEY_LEFT:
+        cameras[selectedCamera]->moveRight(SPEED);
+        break;
+    case GLUT_KEY_UP:
+        cameras[selectedCamera]->moveForward(SPEED);
+        break;
+    case GLUT_KEY_DOWN:
+        cameras[selectedCamera]->moveBackward(SPEED);
+        break;
+    case GLUT_KEY_RIGHT:
+
         break;
     }
 }
