@@ -30,11 +30,20 @@ const GLint W_HEIGHT = 480;
 const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
 
+<<<<<<< HEAD
 // Control de dispositivos
 GLint leftMouseButton;
 GLint rightMouseButton;
 GLint mouseX = -1;
 GLint mouseY = -1;
+=======
+// Control de frames
+GLint lastTime;
+GLint elapsedTime;
+GLint frames;
+GLint framesElapsed;
+GLint fps;
+>>>>>>> ab93f8fd611d45a9d2327107aed2c760f0606b7d
 
 // Control de la proyeccion
 GLfloat NEARFACE = 1.0f;
@@ -42,6 +51,7 @@ GLfloat FARFACE  = 750.0f;
 GLfloat FOV      = 45.0f;
 
 // Control de la camara
+<<<<<<< HEAD
 Camera** cameras = new Camera * [4];
 
 //GLfloat cameraPositionX = 0.0f;
@@ -71,6 +81,20 @@ void init(void) {
     cameras[selectedCamera]->setPhiAngle  ( M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 }
+=======
+GLfloat cameraPositionX = 0.0f;
+GLfloat cameraPositionY = 0.0f;
+GLfloat cameraPositionZ = 1.0f;
+
+GLfloat lookDirectionX  = 0.0f;
+GLfloat lookDirectionY  = 0.0f;
+GLfloat lookDirectionZ  = -1.0f;
+
+GLfloat const SPEED = 0.1;
+GLfloat yawAxis     = 0.0f;
+GLfloat pitchAxis   = 0.0f;
+
+>>>>>>> ab93f8fd611d45a9d2327107aed2c760f0606b7d
 void reshape(GLsizei width, GLsizei height) {
 
     GLfloat aspect = (GLfloat)width / (GLfloat)height;
