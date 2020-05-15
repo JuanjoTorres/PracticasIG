@@ -14,88 +14,71 @@
 
 #endif
 
+#define _USE_MATH_DEFINES
+
 #include <cmath>
 #include <string>
 #include <iostream>
 
+#include "camera.h"
+
 using namespace std;
 
-const GLint W_WIDTH = 640;
+const GLint W_WIDTH =  640;
 const GLint W_HEIGHT = 480;
 
 const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
 
-double rx = 0, ry = 0, rz = 1, px = 0, py = 0, pz = 0, nx = 0, ny = 1, nz = 0;
-
-// Control de frames
-GLint lastTime;
-GLint elapsedTime;
-GLint frames;
-GLint framesElapsed;
-GLint fps;
+// Control de dispositivos
+GLint leftMouseButton;
+GLint rightMouseButton;
+GLint mouseX = -1;
+GLint mouseY = -1;
 
 // Control de la proyeccion
-GLint projectionMode = 1;
-
-GLfloat NEARFACE = 0.1f;
-GLfloat FARFACE = 100.0f;
-GLfloat FOV = 45.0f;
+GLfloat NEARFACE = 1.0f;
+GLfloat FARFACE  = 750.0f;
+GLfloat FOV      = 45.0f;
 
 // Control de la camara
-GLfloat cameraPositionX = 0.0f;
-GLfloat cameraPositionY = 1.0f;
-GLfloat cameraPositionZ = 5.0f;
+Camera** cameras = new Camera * [4];
 
-GLfloat lookDirectionX  = 0.0f;
-GLfloat lookDirectionY  = 0.0f;
-GLfloat lookDirectionZ  = 1.0f;
+//GLfloat cameraPositionX = 0.0f;
+//GLfloat cameraPositionY = 1.0f;
+//GLfloat cameraPositionZ = 5.0f;
 
-GLfloat const SPEED = 0.1;
-GLfloat yawAxis     = 0.0f;
-GLfloat pitchAxis   = 0.0f;
+//GLfloat lookDirectionX  = 0.0f;
+//GLfloat lookDirectionY  = 0.0f;
+//GLfloat lookDirectionZ  = -1.0f;
 
+//GLfloat cameraRotationX = 0.0f;
+//GLfloat cameraRotationY = 1.0f;
+//GLfloat cameraRotationZ = 0.0f;
+
+GLint selectedCamera;
+GLfloat const SPEED = 0.2;
+
+void init(void) {
+   
+    cameras[TOP_VIEW]   = new Camera({  0.0f,   20.0f, 0.0f  }, {  0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, FRONT_VIEW); // Vista de enfrente
+    cameras[FRONT_VIEW] = new Camera({  0.0f,   0.0f,  20.0f }, {  0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },   TOP_VIEW); // Vista de arriba
+    cameras[SIDE_VIEW]  = new Camera({  -20.0f, 0.0f,  0.0f  }, {  1.0f, 0.0f,  0.0f }, { 0.0f, 1.0f,  0.0f },  SIDE_VIEW); // Vista de lado izquierdo
+    cameras[FREE_VIEW]  = new Camera({  30.0f,  20.0f, 15.0f }, {  0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },  FREE_VIEW); // Camara movil
+
+    selectedCamera = FREE_VIEW;
+    cameras[selectedCamera]->setThetaAngle(-M_PI / 3.0f);
+    cameras[selectedCamera]->setPhiAngle  ( M_PI / 2.8f);
+    cameras[selectedCamera]->updateOrientation();
+}
 void reshape(GLsizei width, GLsizei height) {
 
     GLfloat aspect = (GLfloat)width / (GLfloat)height;
 
-    cout << "Aspect: " << aspect << endl;
-
     glViewport(0, 0, width, height);
-
-    glMatrixMode(GL_PROJECTION);   // Select Projection matrix
-    glLoadIdentity();              // Reset the Projection matrix
-
-    if (projectionMode == 0) {
-
-        if (width <= height) {
-            glOrtho(-1.0, 1.0, -1.0 / aspect, 1.0 / aspect, NEARFACE, FARFACE);  // aspect <= 1
-        }
-        else {
-            glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, NEARFACE, FARFACE);  // aspect > 1
-        }
-
-    }
-    else if (projectionMode == 1) {
-
-        GLfloat top = (GLfloat)tan(FOV * 0.5) * NEARFACE;
-        GLfloat bottom = -top;
-        GLfloat left = aspect * bottom;
-        GLfloat right = aspect * top;
-
-        cout << "Top: " << top << endl;
-        cout << "Bottom: " << bottom << endl;
-        cout << "Left: " << left << endl;
-        cout << "Right: " << right << endl;
-
-        glFrustum(left, right, bottom, top, NEARFACE, FARFACE);
-    }
-    else {
-        gluPerspective(FOV, aspect, NEARFACE, FARFACE);
-    }
-
-    // Posicionar la cámara
-    //gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
+    glMatrixMode(GL_PROJECTION);                    // Select Projection matrix
+    glLoadIdentity();                               // Reset the Projection matrix
+    gluPerspective(FOV, aspect, NEARFACE, FARFACE);
 
     glMatrixMode(GL_MODELVIEW);
 }
@@ -122,52 +105,6 @@ void paintGrid() {
     }
 }
 
-void printFPS() {
-    string textFrames = to_string(fps) + " FPS";
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glRasterPos3f(0.8f, -0.9f, -1.0f);
-
-    //glRasterPos2i( 10, 1014 );  // move in 10 pixels from the left and bottom edges
-    for (int i = 0; i < textFrames.length(); ++i)
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, textFrames[i]);
-
-}
-
-
-// FIGURA CERCANA (TORUS)
-void paintTorus() {
-    // Matriz de escalado
-    glPushMatrix();
-
-    // Mover a posicion cercana
-    glTranslatef(-0.4f, 0.0f, -1.0f);
-
-    // Color
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glutSolidTorus(0.3, 0.5, 32, 32);
-
-    // Aplicar matrix
-    glPopMatrix();
-}
-
-// FIGURA LEJANA (TEAPOT)
-void paintTeapot() {
-    //Matriz de escalado
-    glPushMatrix();
-
-    //Mover a posicion lejana
-    glTranslatef(0.5f, 0.0f, -3.0f);
-
-    //Color
-    glColor3f(1.0f, 0.0f, 0.0f);
-
-    //glutSolidTorus(0.3, 0.5, 32, 32);
-    glutSolidTeapot(1.0);
-
-    //Aplicar matrices
-    glPopMatrix();
-}
-
 // Funcion que renderiza la escena OpenGL
 void render() {
 
@@ -176,78 +113,103 @@ void render() {
 
     glLoadIdentity();  
     // Resetear transformaciones
-    gluLookAt(cameraPositionX, cameraPositionY, cameraPositionZ,  // Posicion de la camara
-              cameraPositionX + lookDirectionX,                   // Dirección donde apunta la camara
-              cameraPositionY + lookDirectionY,
-              cameraPositionZ + lookDirectionZ,
-              0.0f, 1.0f, 0.0f);                                  // Vector de rotacion
+    vector <float> cameraPosition = cameras[selectedCamera]-> getPosition();
+    vector <float> lookDirection =  cameras[selectedCamera]->getDirection();
+    vector <float> cameraRotation = cameras[selectedCamera]-> getRotation();
+
+    gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],  // Posicion de la camara
+              cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
+              cameraPosition[1] + lookDirection[1],
+              cameraPosition[2] + lookDirection[2],
+              cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
 
     // Pintar suelo
+    glColor3f(1.0f, 1.0f, 1.0f);
+    paintGrid();
+    //Pintar las figuras
+    glColor3f(0.6f, 0.6f, 0.6f);
+    glutSolidCube(2.0f);
 
-    //Pintar las figuras cercana y lejana
-    paintTorus();
-    paintTeapot();
 
-    printFPS();
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void idle() {
 
-    frames++;
-    framesElapsed++;
-
-    elapsedTime = glutGet(GLUT_ELAPSED_TIME);
-
-    if (elapsedTime - lastTime > 1000) {
-        fps = framesElapsed * 1000 / (elapsedTime - lastTime);
-        lastTime = elapsedTime;
-        framesElapsed = 0;
-    }
-
     //Repintar la pantalla
     glutPostRedisplay();
 }
 
+void processSpecialKeys(int key, int x, int y) {
+    switch (key) {
+    case GLUT_KEY_F1:
+        selectedCamera = FREE_VIEW;
+        break;
+    case GLUT_KEY_F2:
+        selectedCamera = TOP_VIEW;
+        break;
+    case GLUT_KEY_F3:
+        selectedCamera = FRONT_VIEW;
+        break;
+    case GLUT_KEY_F4:
+        selectedCamera = SIDE_VIEW;
+        break;
+    }
+}
 void keyboard(unsigned char key, int x, int y) {
+
     switch (key) {
     case 'a':
-        yawAxis -= 0.01f;
-        lookDirectionX =  sin(yawAxis);
-        lookDirectionZ = -cos(yawAxis);
+    case 'A':
+        cameras[selectedCamera]->moveRight(SPEED);
         break;
     case 'w':
-        cameraPositionX += lookDirectionX * SPEED;
-        cameraPositionY += lookDirectionY * SPEED;
-        cameraPositionZ += lookDirectionZ * SPEED;
+    case 'W':
+        cameras[selectedCamera]->moveForward(SPEED);
         break;
     case 's':
-        cameraPositionX -= lookDirectionX * SPEED;
-        cameraPositionY -= lookDirectionY * SPEED;
-        cameraPositionZ -= lookDirectionZ * SPEED;
+    case 'S':
+        cameras[selectedCamera]->moveBackward(SPEED);
         break;
     case 'd':
-        yawAxis += 0.01f;
-        lookDirectionX = sin(yawAxis);
-        lookDirectionZ = -cos(yawAxis);
-        break;
-    case 'e':
-        pitchAxis += 0.01f;
-        lookDirectionZ = -cos(pitchAxis); 
-        lookDirectionY = sin(pitchAxis);
-        break;
-    case 'r':
-        pitchAxis -= 0.01f;
-        lookDirectionZ = -cos(pitchAxis);
-        lookDirectionY = sin(pitchAxis);
+
         break;
     }
 }
 
-void switchProyection(int value) {
-    projectionMode = value;
-    reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+// Acciones del mouse [PULSAR]
+void mouseCallback (int button, int state, int x, int y) {
+
+    if (button == GLUT_LEFT_BUTTON)
+        leftMouseButton = state;
+    else if (button == GLUT_RIGHT_BUTTON)
+        rightMouseButton = state;
+
+    mouseX = x;
+    mouseY = y;
+}
+
+// Acciones del mouse [MOVER]
+void mouseMotion(int x, int y) {
+
+    // Solo se ejecutara cuando el boton este pulsado.
+    if (leftMouseButton == GLUT_DOWN) {
+
+        float thetaAngle = cameras[selectedCamera]->getThetaAngle();
+        float phiAngle   = cameras[selectedCamera]->getPhiAngle  ();
+
+        thetaAngle += (y - mouseY) * 0.002f;
+        phiAngle   += (mouseX - x) * 0.002f;
+
+        cameras[selectedCamera]->setThetaAngle(thetaAngle);
+        cameras[selectedCamera]->setPhiAngle    (phiAngle);
+
+        cameras[selectedCamera]->updateOrientation();
+    }
+
+    mouseX = x;
+    mouseY = y;
 }
 
 // Funcion principal
@@ -263,16 +225,9 @@ int main(int argc, char** argv) {
     // Creamos la nueva ventana
     glutCreateWindow("Etapa 4");
 
-    //Configurar menu
-    glutCreateMenu(switchProyection);
-    glutAddMenuEntry("GL_ORTHO", 0);
-    glutAddMenuEntry("GL_FRUSTUM", 1);
-    glutAddMenuEntry("GL_PERSPECTIVE", 2);
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-
     //Configurar luces
     GLfloat lightPosition[] = { 10.0, 10.0, 10.0, 1.0 };
-    GLfloat lightColor[] = { 1.0, 1.0, 0.0, 0.0 };
+    GLfloat lightColor[] = { 1.0, 1.0, 1.0, 0.0 };
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
@@ -280,17 +235,23 @@ int main(int argc, char** argv) {
     glEnable(GL_LIGHT0);
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
+    init();
+
+    // Indicamos cuales son las funciones de redibujado, idle y reshape
+    glutDisplayFunc(render);
+    glutIdleFunc(idle);
+    glutReshapeFunc(reshape);
+
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(processSpecialKeys);
+    glutMouseFunc(mouseCallback);
+    glutMotionFunc(mouseMotion);
 
     // Habilitar
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
-
-    // Indicamos cuales son las funciones de redibujado, idle y reshape
-    glutDisplayFunc(render);
-    glutKeyboardFunc(keyboard);
-    glutIdleFunc(idle);
-    glutReshapeFunc(reshape);
 
     // Comienza la ejecucion del core de GLUT (RENDERING)
     glutMainLoop();
