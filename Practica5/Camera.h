@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum CameraType { TOP_VIEW, FRONT_VIEW, SIDE_VIEW, FREE_VIEW };
+enum CameraType { TOP_VIEW, FRONT_VIEW, SIDE_VIEW, FREE_VIEW, SPHERICAL_VIEW };
 
 class Camera {
 private:
@@ -41,5 +41,7 @@ public:
 	void moveForward (float speed);
 	void moveBackward(float speed);
 	void moveRight   (float speed);
-	void moverLeft   (float speed);
+	void moveLeft    (float speed);
+	void moveUpward  (float speed);
+	void moveDownward(float speed);
 };

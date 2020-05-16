@@ -68,38 +68,47 @@ void Camera::setRotation(vector<float> cameraRotation) {
 }
 
 void Camera::moveForward(float speed) {
-	cameraPosition[0] += lookDirection[0] * speed;
-	cameraPosition[1] += lookDirection[1] * speed;
-	cameraPosition[2] += lookDirection[2] * speed;
+
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[2] -= speed;
+	else if (type == FREE_VIEW) {
+		cameraPosition[0] += lookDirection[0] * speed;
+		cameraPosition[1] += lookDirection[1] * speed;
+		cameraPosition[2] += lookDirection[2] * speed;
+	}
 }
 
 void Camera::moveBackward(float speed) {
-	cameraPosition[0] -= lookDirection[0] * speed;
-	cameraPosition[1] -= lookDirection[1] * speed;
-	cameraPosition[2] -= lookDirection[2] * speed;
+
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[2] += speed;
+	else if (type == FREE_VIEW) {
+		cameraPosition[0] -= lookDirection[0] * speed;
+		cameraPosition[1] -= lookDirection[1] * speed;
+		cameraPosition[2] -= lookDirection[2] * speed;
+	}
+}
+
+void Camera::moveLeft(float speed) {
+
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[0] -= speed;
 }
 
 void Camera::moveRight(float speed) {
-	float viewX = lookDirection[0] - cameraPosition[0];
-	float viewY = lookDirection[1] - cameraPosition[1];
-	float viewZ = lookDirection[2] - cameraPosition[2];
 
-	std::cout << "x: " << viewX << endl;
-	std::cout << "y: " << viewY << endl;
-	std::cout << "z: " << viewZ << endl;
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[0] += speed;
+}
 
-	float x =  ((viewY * cameraRotation[2]) - (viewZ * cameraRotation[1]));
-	float y = -((viewX * cameraRotation[2]) - (viewZ * cameraRotation[0]));
-	float z =  ((viewX * cameraRotation[1]) - (viewY * cameraRotation[0]));
+void Camera::moveUpward(float speed) {
 
-    float magnitude = sqrt((x * x) + (y * y) + (z * z));
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[1] += speed;
+}
 
-	x /= magnitude;
-	y /= magnitude;
-	z /= magnitude;
+void Camera::moveDownward(float speed) {
 
-	cameraPosition[0] -= x * speed;
-	cameraPosition[1] -= y * speed;
-	cameraPosition[2] -= z * speed;
-
+	if (type != FREE_VIEW && type != SPHERICAL_VIEW)
+		cameraPosition[1] -= speed;
 }

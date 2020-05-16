@@ -16,6 +16,9 @@
 
 #define _USE_MATH_DEFINES
 
+#define VK_SHIFT 0x10
+#define VK_SPACE ' '
+
 #include <cmath>
 #include <string>
 #include <iostream>
@@ -43,15 +46,17 @@ GLfloat FOV      = 45.0f;
 
 // Control de la camara
 Camera** cameras = new Camera * [4];
+GLint counter;
 GLint selectedCamera;
 GLfloat const SPEED = 0.2;
 
 void init(void) {
    
-    cameras[TOP_VIEW]   = new Camera({  0.0f,   20.0f, 0.0f  }, {  0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, FRONT_VIEW); // Vista de enfrente
-    cameras[FRONT_VIEW] = new Camera({  0.0f,   0.0f,  20.0f }, {  0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },   TOP_VIEW); // Vista de arriba
-    cameras[SIDE_VIEW]  = new Camera({  -20.0f, 0.0f,  0.0f  }, {  1.0f, 0.0f,  0.0f }, { 0.0f, 1.0f,  0.0f },  SIDE_VIEW); // Vista de lado izquierdo
-    cameras[FREE_VIEW]  = new Camera({  30.0f,  20.0f, 15.0f }, {  0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },  FREE_VIEW); // Camara movil
+    cameras[TOP_VIEW]       = new Camera({   0.0f,  20.0f,  0.0f }, { 0.0f,  -1.0f,  0.0f }, { 0.0f, 0.0f, -1.0f },       TOP_VIEW); // Vista de enfrente
+    cameras[FRONT_VIEW]     = new Camera({   0.0f,   0.0f, 20.0f }, { 0.0f,   0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },     FRONT_VIEW); // Vista de arriba
+    cameras[SIDE_VIEW]      = new Camera({ -20.0f,   0.0f,  0.0f }, { 1.0f,   0.0f,  0.0f }, { 0.0f, 1.0f,  0.0f },      SIDE_VIEW); // Vista de lado izquierdo
+    cameras[FREE_VIEW]      = new Camera({  30.0f,  20.0f, 15.0f }, { 0.0f,   0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f },      FREE_VIEW); // Camara movil
+    cameras[SPHERICAL_VIEW] = new Camera({   0.0f,   5.0f,  0.0f }, { 0.0f,  -1.0f,  0.0f }, { 0.0f, 0.0f, -1.0f }, SPHERICAL_VIEW); // Camara esferica
 
     selectedCamera = FREE_VIEW;
     cameras[selectedCamera]->setThetaAngle(-M_PI / 3.0f);
@@ -143,14 +148,20 @@ void processSpecialKeys(int key, int x, int y) {
     case GLUT_KEY_F4:
         selectedCamera = SIDE_VIEW;
         break;
+    case GLUT_KEY_F5:
+        selectedCamera = SPHERICAL_VIEW;
+        break;
     }
 }
 void keyboard(unsigned char key, int x, int y) {
 
     switch (key) {
+    case VK_SPACE:
+        cameras[selectedCamera]->moveUpward(SPEED);
+        break;
     case 'a':
     case 'A':
-        cameras[selectedCamera]->moveRight(SPEED);
+        cameras[selectedCamera]->moveLeft(SPEED);
         break;
     case 'w':
     case 'W':
@@ -161,7 +172,37 @@ void keyboard(unsigned char key, int x, int y) {
         cameras[selectedCamera]->moveBackward(SPEED);
         break;
     case 'd':
-
+    case 'D':
+        cameras[selectedCamera]->moveRight(SPEED);
+        break;
+    case 'e':
+    case 'E':
+        counter++;
+        if (counter % 5 == 0) {
+            cameras[SPHERICAL_VIEW]->setPosition ({ 0.0f,  5.0f,  0.0f }); // vista cenital
+            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, -1.0f,  0.0f });
+            cameras[SPHERICAL_VIEW]->setRotation ({ 0.0f,  0.0f, -1.0f });
+        } else if (counter % 5 == 1) {
+            cameras[SPHERICAL_VIEW]->setPosition ({ 0.0f,  5.0f,  5.0f }); // vista picado
+            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, -1.0f, -1.0f });
+            cameras[SPHERICAL_VIEW]->setRotation ({ 0.0f,  1.0f,  0.0f });
+        } else if (counter % 5 == 2) {
+            cameras[SPHERICAL_VIEW]->setPosition ({ 0.0f,  0.0f,  5.0f }); // vista normal
+            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f,  0.0f, -1.0f });
+            cameras[SPHERICAL_VIEW]->setRotation ({ 0.0f,  1.0f,  0.0f });
+        } else if (counter % 5 == 3) {
+            cameras[SPHERICAL_VIEW]->setPosition ({ 0.0f, -5.0f,  5.0f }); // vista contrapicado
+            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f,  1.0f, -1.0f });
+            cameras[SPHERICAL_VIEW]->setRotation ({ 0.0f,  0.0f,  1.0f });
+        } else {
+            cameras[SPHERICAL_VIEW]->setPosition ({ 0.0f, -5.0f,  0.0f }); // vista nadir
+            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f,  1.0f,  0.0f });
+            cameras[SPHERICAL_VIEW]->setRotation ({ 0.0f,  0.0f,  1.0f });
+        }
+        break;
+    case 'z':
+    case 'Z':
+        cameras[selectedCamera]->moveDownward(SPEED);
         break;
     }
 }
