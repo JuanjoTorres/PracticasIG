@@ -57,6 +57,19 @@ GLboolean statusLight2 = true;
 GLboolean statusLight3 = true;
 GLboolean statusNormal = true;
 
+//Configurar luces
+GLfloat lightPosition1[] = { 1, 0, 0, 1 };
+GLfloat lightColor1[] = { 1.0, 1.0, 0.4, 1.0 };
+
+GLfloat lightPosition2[] = { 0, 1, 0, 1 };
+GLfloat lightColor2[] = { 1.0, 0.4, 1, 1.0 };
+
+GLfloat lightPosition3[] = { 0, 0, 0, 1 };
+GLfloat lightColor3[] = { 0.4, 1, 1, 1.0 };
+
+GLfloat lightPosition4[] = { 0, 0, 1, 1 };
+GLfloat lightColor4[] = { 1.0, 1, 1, 1.0 };
+
 void init(void) {
 
     cameras[TOP_VIEW] = new Camera({0.0f, 20.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
@@ -188,17 +201,26 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'a':
         case 'A':
-            cameras[selectedCamera]->moveRight(SPEED);
+
             break;
-        case 'w':
-        case 'W':
-            cameras[selectedCamera]->moveForward(SPEED);
+        case 'z':
+        case 'Z':
+
             break;
         case 's':
         case 'S':
-            cameras[selectedCamera]->moveBackward(SPEED);
+
+            break;
+        case 'x':
+        case 'X':
+
             break;
         case 'd':
+        case 'D':
+
+            break;
+        case 'c':
+        case 'C':
 
             break;
         case 32:    // espacio
@@ -327,16 +349,6 @@ int main(int argc, char **argv) {
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
-    //Configurar luces
-    GLfloat lightPosition1[] = {1, 0, 0, 1};
-    GLfloat lightColor1[] = {1.0, 1.0, 0.4, 1.0};
-    GLfloat lightPosition2[] = {0, 1, 0, 1};
-    GLfloat lightColor2[] = {1.0, 0.4, 1, 1.0};
-    GLfloat lightPosition3[] = {0, 0, 0, 1};
-    GLfloat lightColor3[] = {0.4, 1, 1, 1.0};
-    GLfloat lightPosition4[] = {0, 0, 1, 1};
-    GLfloat lightColor4[] = {1.0, 1, 1, 1.0};
-
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
@@ -344,11 +356,11 @@ int main(int argc, char **argv) {
     glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition2);
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor2);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, lightColor2);
     glEnable(GL_LIGHT1);
 
     glLightfv(GL_LIGHT2, GL_POSITION, lightPosition3);
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, lightColor3);
+    glLightfv(GL_LIGHT2, GL_AMBIENT, lightColor3);
     glEnable(GL_LIGHT2);
 
     glLightfv(GL_LIGHT3, GL_POSITION, lightPosition4);
@@ -356,17 +368,6 @@ int main(int argc, char **argv) {
     glEnable(GL_LIGHT3);
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-
-    /*GLfloat lightPosition1[] = { 10.0, 10.0, 10.0, 1.0 };
-    GLfloat EspecularLuz1[] = { 0, 1, 0.4, 1 };
-    GLfloat AmbientLuz1[] = { 1, 0, 1, 1 };
-    GLfloat ColorDifusoLuz1[] = { 0.5, 1, 0, 1 };
-
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, EspecularLuz1);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, AmbientLuz1);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, ColorDifusoLuz1);*/
 
     init();
 
