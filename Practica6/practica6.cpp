@@ -152,7 +152,8 @@ void render() {
     paintGrid();
     //Pintar las figuras
     glColor3f(0.6f, 0.6f, 0.6f);
-    glutSolidCube(2.0f);
+    glTranslatef(10, 0, 10);
+    glutSolidCube(4.0f);
 
     cambiarSombreado();
 
