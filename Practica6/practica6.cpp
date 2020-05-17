@@ -46,16 +46,27 @@ GLfloat FARFACE = 750.0f;
 GLfloat FOV = 45.0f;
 
 // Control de la camara
-Camera** cameras = new Camera * [4];
+Camera **cameras = new Camera *[4];
 GLint selectedCamera;
 GLfloat const SPEED = 0.2;
 
+//Estado de las luces
+GLboolean statusLight0 = true;
+GLboolean statusLight1 = true;
+GLboolean statusLight2 = true;
+GLboolean statusLight3 = true;
+GLboolean statusNormal = true;
+
 void init(void) {
 
-    cameras[TOP_VIEW] = new Camera({ 0.0f,   20.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, FRONT_VIEW); // Vista de enfrente
-    cameras[FRONT_VIEW] = new Camera({ 0.0f,   0.0f,  20.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f }, TOP_VIEW); // Vista de arriba
-    cameras[SIDE_VIEW] = new Camera({ -20.0f, 0.0f,  0.0f }, { 1.0f, 0.0f,  0.0f }, { 0.0f, 1.0f,  0.0f }, SIDE_VIEW); // Vista de lado izquierdo
-    cameras[FREE_VIEW] = new Camera({ 30.0f,  20.0f, 15.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f,  0.0f }, FREE_VIEW); // Camara movil
+    cameras[TOP_VIEW] = new Camera({0.0f, 20.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
+                                   FRONT_VIEW); // Vista de enfrente
+    cameras[FRONT_VIEW] = new Camera({0.0f, 0.0f, 20.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+                                     TOP_VIEW); // Vista de arriba
+    cameras[SIDE_VIEW] = new Camera({-20.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+                                    SIDE_VIEW); // Vista de lado izquierdo
+    cameras[FREE_VIEW] = new Camera({30.0f, 20.0f, 15.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+                                    FREE_VIEW); // Camara movil
 
     selectedCamera = FREE_VIEW;
     cameras[selectedCamera]->setThetaAngle(-M_PI / 3.0f);
@@ -65,7 +76,7 @@ void init(void) {
 
 void reshape(GLsizei width, GLsizei height) {
 
-    GLfloat aspect = (GLfloat)width / (GLfloat)height;
+    GLfloat aspect = (GLfloat) width / (GLfloat) height;
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);                    // Select Projection matrix
@@ -97,12 +108,10 @@ void paintGrid() {
     }
 }
 
-void cambiarSombreado(){
-    if (sombreado == 0)
-    {
+void cambiarSombreado() {
+    if (sombreado == 0) {
         glShadeModel(GL_FLAT);
-    }
-    else {
+    } else {
         glShadeModel(GL_SMOOTH);
     }
 }
@@ -115,15 +124,15 @@ void render() {
 
     glLoadIdentity();
     // Resetear transformaciones
-    vector <float> cameraPosition = cameras[selectedCamera]->getPosition();
-    vector <float> lookDirection = cameras[selectedCamera]->getDirection();
-    vector <float> cameraRotation = cameras[selectedCamera]->getRotation();
+    vector<float> cameraPosition = cameras[selectedCamera]->getPosition();
+    vector<float> lookDirection = cameras[selectedCamera]->getDirection();
+    vector<float> cameraRotation = cameras[selectedCamera]->getRotation();
 
     gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],  // Posicion de la camara
-        cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
-        cameraPosition[1] + lookDirection[1],
-        cameraPosition[2] + lookDirection[2],
-        cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
+              cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
+              cameraPosition[1] + lookDirection[1],
+              cameraPosition[2] + lookDirection[2],
+              cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
 
     // Pintar suelo
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -147,60 +156,59 @@ void idle() {
 
 void processSpecialKeys(int key, int x, int y) {
     switch (key) {
-    case GLUT_KEY_F1:
-        selectedCamera = FREE_VIEW;
-        break;
-    case GLUT_KEY_F2:
-        selectedCamera = TOP_VIEW;
-        break;
-    case GLUT_KEY_F3:
-        selectedCamera = FRONT_VIEW;
-        break;
-    case GLUT_KEY_F4:
-        selectedCamera = SIDE_VIEW;
-        break;
-    case GLUT_KEY_LEFT:
-        cameras[selectedCamera]->moveRight(SPEED);
-        break;
-    case GLUT_KEY_UP:
-        cameras[selectedCamera]->moveForward(SPEED);
-        break;
-    case GLUT_KEY_DOWN:
-        cameras[selectedCamera]->moveBackward(SPEED);
-        break;
-    case GLUT_KEY_RIGHT:
+        case GLUT_KEY_F1:
+            selectedCamera = FREE_VIEW;
+            break;
+        case GLUT_KEY_F2:
+            selectedCamera = TOP_VIEW;
+            break;
+        case GLUT_KEY_F3:
+            selectedCamera = FRONT_VIEW;
+            break;
+        case GLUT_KEY_F4:
+            selectedCamera = SIDE_VIEW;
+            break;
+        case GLUT_KEY_LEFT:
+            cameras[selectedCamera]->moveRight(SPEED);
+            break;
+        case GLUT_KEY_UP:
+            cameras[selectedCamera]->moveForward(SPEED);
+            break;
+        case GLUT_KEY_DOWN:
+            cameras[selectedCamera]->moveBackward(SPEED);
+            break;
+        case GLUT_KEY_RIGHT:
 
-        break;
+            break;
     }
 }
+
 void keyboard(unsigned char key, int x, int y) {
 
     switch (key) {
-    case 'a':
-    case 'A':
-        cameras[selectedCamera]->moveRight(SPEED);
-        break;
-    case 'w':
-    case 'W':
-        cameras[selectedCamera]->moveForward(SPEED);
-        break;
-    case 's':
-    case 'S':
-        cameras[selectedCamera]->moveBackward(SPEED);
-        break;
-    case 'd':
+        case 'a':
+        case 'A':
+            cameras[selectedCamera]->moveRight(SPEED);
+            break;
+        case 'w':
+        case 'W':
+            cameras[selectedCamera]->moveForward(SPEED);
+            break;
+        case 's':
+        case 'S':
+            cameras[selectedCamera]->moveBackward(SPEED);
+            break;
+        case 'd':
 
-        break;
-    case 32:    // espacio
-        if (sombreado == 0)
-        {
-            sombreado = 1;
-        }
-        else {
-            sombreado = 0;
-        }
+            break;
+        case 32:    // espacio
+            if (sombreado == 0) {
+                sombreado = 1;
+            } else {
+                sombreado = 0;
+            }
 
-        cambiarSombreado();
+            cambiarSombreado();
     }
 }
 
@@ -238,8 +246,66 @@ void mouseMotion(int x, int y) {
     mouseY = y;
 }
 
+
+void switchLights(int item) {
+
+    switch (item) {
+        case 0:
+            statusLight0 = !statusLight0;
+            if (statusLight0) {
+                glEnable(GL_LIGHT0);
+                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT0", item);
+            } else {
+                glDisable(GL_LIGHT0);
+                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT0", item);
+            }
+            break;
+        case 1:
+            statusLight1 = !statusLight1;
+            if (statusLight1) {
+                glEnable(GL_LIGHT1);
+                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT1", item);
+            } else {
+                glDisable(GL_LIGHT1);
+                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT1", item);
+            }
+            break;
+        case 2:
+            statusLight2 = !statusLight2;
+            if (statusLight2) {
+                glEnable(GL_LIGHT2);
+                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT2", item);
+            } else {
+                glDisable(GL_LIGHT2);
+                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT2", item);
+            }
+            break;
+        case 3:
+            statusLight3 = !statusLight3;
+            if (statusLight3) {
+                glEnable(GL_LIGHT3);
+                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT3", item);
+            } else {
+                glDisable(GL_LIGHT3);
+                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT3", item);
+            }
+            break;
+        case 4:
+            statusNormal = !statusNormal;
+            if (statusNormal) {
+                glEnable(GL_NORMALIZE);
+                glutChangeToMenuEntry(item + 1, "Disable GL_NORMAL", item);
+            } else {
+                glDisable(GL_NORMALIZE);
+                glutChangeToMenuEntry(item + 1, "Enable GL_NORMAL", item);
+            }
+            break;
+    }
+
+}
+
 // Funcion principal
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
@@ -251,21 +317,31 @@ int main(int argc, char** argv) {
     // Creamos la nueva ventana
     glutCreateWindow("Etapa 4");
 
+    //Configurar menu
+    glutCreateMenu(switchLights);
+    glutAddMenuEntry("Disable GL_LIGHT0", 0);
+    glutAddMenuEntry("Disable GL_LIGHT1", 1);
+    glutAddMenuEntry("Disable GL_LIGHT2", 2);
+    glutAddMenuEntry("Disable GL_LIGHT3", 3);
+    glutAddMenuEntry("Disable GL_NORMAL", 4);
+
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+
     //Configurar luces
-    GLfloat lightPosition1[] = { 1, 0, 0, 1 };
-    GLfloat lightColor1[] = { 1.0, 1.0, 0.4, 1.0 };
-    GLfloat lightPosition2[] = { 0, 1, 0, 1 };
-    GLfloat lightColor2[] = { 1.0, 0.4, 1, 1.0 };
-    GLfloat lightPosition3[] = { 0, 0, 0, 1 };
-    GLfloat lightColor3[] = { 0.4, 1, 1, 1.0 };
-    GLfloat lightPosition4[] = { 0, 0, 1, 1 };
-    GLfloat lightColor4[] = { 1.0, 1, 1, 1.0 };
+    GLfloat lightPosition1[] = {1, 0, 0, 1};
+    GLfloat lightColor1[] = {1.0, 1.0, 0.4, 1.0};
+    GLfloat lightPosition2[] = {0, 1, 0, 1};
+    GLfloat lightColor2[] = {1.0, 0.4, 1, 1.0};
+    GLfloat lightPosition3[] = {0, 0, 0, 1};
+    GLfloat lightColor3[] = {0.4, 1, 1, 1.0};
+    GLfloat lightPosition4[] = {0, 0, 1, 1};
+    GLfloat lightColor4[] = {1.0, 1, 1, 1.0};
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor1);
-    //glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition2);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, lightColor2);
@@ -308,6 +384,7 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_NORMALIZE);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     // Comienza la ejecucion del core de GLUT (RENDERING)
