@@ -92,7 +92,7 @@ void reshape(GLsizei width, GLsizei height) {
         gluPerspective(FOV, aspect, NEARFACE, FARFACE);
     }
 
-    // Posicionar la cámara
+    // Posicionar la cÃ¡mara
     //gluLookAt(rx, ry, rz, px, py, pz, nx, ny, nz);
 
     glMatrixMode(GL_MODELVIEW);
@@ -175,7 +175,7 @@ void render() {
     glLoadIdentity();
     // Resetear transformaciones
     gluLookAt(cameraPositionX, cameraPositionY, cameraPositionZ,  // Posicion de la camara
-        cameraPositionX + lookDirectionX,                   // Dirección donde apunta la camara
+        cameraPositionX + lookDirectionX,                   // DirecciÃ³n donde apunta la camara
         cameraPositionY + lookDirectionY,
         cameraPositionZ + lookDirectionZ,
         0.0f, 1.0f, 0.0f);                                  // Vector de rotacion
@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
-    // Indicamos posición y tamaño de la ventana
+    // Indicamos posiciÃ³n y tamaÃ±o de la ventana
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - W_WIDTH) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - W_HEIGHT) / 2);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
