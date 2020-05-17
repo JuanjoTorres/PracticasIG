@@ -152,7 +152,7 @@ void render() {
     paintGrid();
     //Pintar las figuras
     glColor3f(0.6f, 0.6f, 0.6f);
-    glTranslatef(10, 0, 10);
+    glTranslatef(10, 5, 10);
     glutSolidCube(4.0f);
 
     cambiarSombreado();
@@ -202,27 +202,33 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'a':
         case 'A':
-
+            lightPosition1[0] = lightPosition1[0] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 'z':
         case 'Z':
-
+            lightPosition1[0] = lightPosition1[0] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 's':
         case 'S':
-
+            lightPosition1[1] = lightPosition1[1] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 'x':
         case 'X':
-
+            lightPosition1[1] = lightPosition1[1] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 'd':
         case 'D':
-
+            lightPosition1[2] = lightPosition1[2] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 'c':
         case 'C':
-
+            lightPosition1[2] = lightPosition1[2] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition1);
             break;
         case 32:    // espacio
             if (sombreado == 0) {
@@ -277,43 +283,33 @@ void switchLights(int item) {
             statusLight0 = !statusLight0;
             if (statusLight0) {
                 glEnable(GL_LIGHT0);
-                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT0", item);
+                glutChangeToMenuEntry(item + 1, "Disable diffuse light", item);
             } else {
                 glDisable(GL_LIGHT0);
-                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT0", item);
+                glutChangeToMenuEntry(item + 1, "Enable diffuse light", item);
             }
             break;
         case 1:
             statusLight1 = !statusLight1;
             if (statusLight1) {
                 glEnable(GL_LIGHT1);
-                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT1", item);
+                glutChangeToMenuEntry(item + 1, "Disable specular light", item);
             } else {
                 glDisable(GL_LIGHT1);
-                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT1", item);
+                glutChangeToMenuEntry(item + 1, "Enable specular light", item);
             }
             break;
         case 2:
             statusLight2 = !statusLight2;
             if (statusLight2) {
                 glEnable(GL_LIGHT2);
-                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT2", item);
+                glutChangeToMenuEntry(item + 1, "Disable ambient light", item);
             } else {
                 glDisable(GL_LIGHT2);
-                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT2", item);
+                glutChangeToMenuEntry(item + 1, "Enable ambient light", item);
             }
             break;
         case 3:
-            statusLight3 = !statusLight3;
-            if (statusLight3) {
-                glEnable(GL_LIGHT3);
-                glutChangeToMenuEntry(item + 1, "Disable GL_LIGHT3", item);
-            } else {
-                glDisable(GL_LIGHT3);
-                glutChangeToMenuEntry(item + 1, "Enable GL_LIGHT3", item);
-            }
-            break;
-        case 4:
             statusNormal = !statusNormal;
             if (statusNormal) {
                 glEnable(GL_NORMALIZE);
@@ -338,15 +334,14 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Etapa 4");
+    glutCreateWindow("Etapa 5");
 
     //Configurar menu
     glutCreateMenu(switchLights);
-    glutAddMenuEntry("Disable GL_LIGHT0", 0);
-    glutAddMenuEntry("Disable GL_LIGHT1", 1);
-    glutAddMenuEntry("Disable GL_LIGHT2", 2);
-    glutAddMenuEntry("Disable GL_LIGHT3", 3);
-    glutAddMenuEntry("Disable GL_NORMAL", 4);
+    glutAddMenuEntry("Disable Diffuse light", 0);
+    glutAddMenuEntry("Disable Specular light", 1);
+    glutAddMenuEntry("Disable Ambient light", 2);
+    glutAddMenuEntry("Disable GL_NORMAL", 3);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
@@ -363,10 +358,6 @@ int main(int argc, char **argv) {
     glLightfv(GL_LIGHT2, GL_POSITION, lightPosition3);
     glLightfv(GL_LIGHT2, GL_AMBIENT, lightColor3);
     glEnable(GL_LIGHT2);
-
-    glLightfv(GL_LIGHT3, GL_POSITION, lightPosition4);
-    glLightfv(GL_LIGHT3, GL_DIFFUSE, lightColor4);
-    glEnable(GL_LIGHT3);
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
