@@ -153,7 +153,7 @@ void render() {
     //Pintar las figuras
     glColor3f(0.6f, 0.6f, 0.6f);
     glTranslatef(10, 5, 10);
-    glutSolidCube(4.0f);
+    glutSolidTeapot(4.0);
 
     cambiarSombreado();
 
