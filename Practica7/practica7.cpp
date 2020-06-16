@@ -65,7 +65,7 @@ GLfloat const SPEED = 0.2;
 
 //Models
 //Model models[5];
-int const NMODELS = 12;
+int const NMODELS = 3;
 Model models[NMODELS];
 
 
@@ -127,17 +127,9 @@ void init(void) {
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 
-    models[0] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_BASE.obj");
-    models[1] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
-    models[2] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_LIGHT.obj");
-    models[3] = importModel(ABSOLUTE_PATH "Media/Rocks/BigRock_1.obj");
-    models[4] = importModel(ABSOLUTE_PATH "Media/Rocks/BigRock_2.obj");
-    models[5] = importModel(ABSOLUTE_PATH "Media/Rocks/MediumRock_1.obj");
-    models[6] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_1.obj");
-    models[7] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_2.obj");
-    models[8] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_3.obj");
-    models[9] = importModel(ABSOLUTE_PATH "Media/Trees/Tree1.obj");
-    models[10] = importModel(ABSOLUTE_PATH "Media/Trees/Tree2.obj");
+    models[0] = importModel("Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
+    models[1] = importModel("Media/LightHouse/Lighthouse_LIGHT.obj");
+    models[2] = importModel("Media/Terrain/Terrain_ALL.obj");
 }
 
 void reshape(GLsizei width, GLsizei height) {
@@ -210,11 +202,6 @@ void render() {
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-// Pintar suelo
-    glColor3f(1.0f, 1.0f, 1.0f);
-    paintGrid();
-
 
     glutSwapBuffers();
 }
@@ -345,7 +332,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Etapa 4");
+    glutCreateWindow("Etapa 6");
 
     //Configurar luces
     GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
