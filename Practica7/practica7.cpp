@@ -17,13 +17,16 @@
 #endif
 
 #define _USE_MATH_DEFINES
-
 #define VK_SHIFT 0x10
 #define VK_SPACE ' '
 
 #include <cmath>
 #include <string>
 #include <iostream>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>
 
 using namespace std;
 
@@ -32,6 +35,14 @@ const GLint W_HEIGHT = 480;
 
 const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
+
+struct Model {
+    float* vertex;
+    float* normal;
+    float* uv;
+    int numVertex;
+    float position;
+};
 
 // Control de dispositivos
 GLint leftMouseButton;
@@ -50,6 +61,54 @@ GLint counter;
 GLint selectedCamera;
 GLfloat const SPEED = 0.2;
 
+//Models
+//Model models[5];
+int const NMODELS = 12;
+Model models[NMODELS];
+
+
+Model importModel(string pathname) {
+
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(pathname,
+        aiProcessPreset_TargetRealtime_Quality);
+
+    aiMesh* mesh = scene->mMeshes[0];
+
+    int numVerts0 = mesh->mNumFaces * 3;
+
+    float* vertexArray = new float[mesh->mNumFaces * 3 * 3];
+    float* normalArray = new float[mesh->mNumFaces * 3 * 3];
+    float* uvArray     = new float[mesh->mNumFaces * 3 * 2];
+
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+    {
+        const aiFace& face = mesh->mFaces[i];
+
+        for (int j = 0; j < 3; j++)
+        {
+            aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[j]];
+            memcpy(uvArray, &uv, sizeof(float) * 2);
+            uvArray += 2;
+
+            aiVector3D normal = mesh->mNormals[face.mIndices[j]];
+            memcpy(normalArray, &normal, sizeof(float) * 3);
+            normalArray += 3;
+
+            aiVector3D pos = mesh->mVertices[face.mIndices[j]];
+            memcpy(vertexArray, &pos, sizeof(float) * 3);
+            vertexArray += 3;
+        }
+    }
+
+    uvArray     -= mesh->mNumFaces * 3 * 2;
+    normalArray -= mesh->mNumFaces * 3 * 3;
+    vertexArray -= mesh->mNumFaces * 3 * 3;
+
+    Model a = { vertexArray, normalArray, uvArray, numVerts0, 0.0 };
+    return a;
+}
+
 void init(void) {
 
     cameras[TOP_VIEW] = new Camera({ 0.0f, 20.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, TOP_VIEW); // Vista de enfrente
@@ -62,6 +121,18 @@ void init(void) {
     cameras[selectedCamera]->setThetaAngle(-M_PI / 3.0f);
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
+
+    models[0] = importModel("Media/LightHouse/Lighthouse_BASE.obj");
+    models[1] = importModel("Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
+    models[2] = importModel("Media/LightHouse/Lighthouse_LIGHT.obj");
+    models[3] = importModel("Media/Rocks/BigRock_1.obj");
+    models[4] = importModel("Media/Rocks/BigRock_2.obj");
+    models[5] = importModel("Media/Rocks/MediumRock_1.obj");
+    models[6] = importModel("Media/Rocks/SmallRock_1.obj");
+    models[7] = importModel("Media/Rocks/SmallRock_2.obj");
+    models[8] = importModel("Media/Rocks/SmallRock_3.obj");
+    models[9] = importModel("Media/Trees/Tree1.obj");
+    models[10] = importModel("Media/Trees/Tree2.obj");
 }
 
 void reshape(GLsizei width, GLsizei height) {
@@ -116,12 +187,28 @@ void render() {
         cameraPosition[2] + lookDirection[2],
         cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glPushMatrix();
+
+    for (int i = 0; i < NMODELS; i++) {
+        glVertexPointer(3, GL_FLOAT, 0, models[i].vertex);
+        glNormalPointer(GL_FLOAT, 0, models[i].normal);
+
+        // glClientActiveTexture(GL_TEXTURE0_ARB);
+        glTexCoordPointer(2, GL_FLOAT, 0, models[i].uv);
+        glDrawArrays(GL_TRIANGLES, 0, models[i].numVertex);
+    }
+
+    glPopMatrix();
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 // Pintar suelo
     glColor3f(1.0f, 1.0f, 1.0f);
     paintGrid();
-    //Pintar las figuras
-    glColor3f(0.6f, 0.6f, 0.6f);
-    glutSolidCube(2.0f);
 
 
     glutSwapBuffers();
