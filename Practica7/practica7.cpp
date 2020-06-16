@@ -2,12 +2,14 @@
 #if defined(__APPLE__)
 
 #define GL_SILENCE_DEPRECATION
+#define ABSOLUTE_PATH "/Users/antoni/CLionProjects/PracticasIG/Practica7/"
 
 #include <OpenGL/gl.h>
 #include <GLUT/glut.h>
 #include "Camera.h"
 
 #else
+#define ABSOLUTE_PATH ""
 
 #include <GL/glut.h>
 #include <GL/gl.h>
@@ -37,9 +39,9 @@ const GLint W_WINDOW = 2;
 const GLint H_WINDOW = 2;
 
 struct Model {
-    float* vertex;
-    float* normal;
-    float* uv;
+    float *vertex;
+    float *normal;
+    float *uv;
     int numVertex;
     float position;
 };
@@ -56,7 +58,7 @@ GLfloat FARFACE = 750.0f;
 GLfloat FOV = 45.0f;
 
 // Control de la camara
-Camera** cameras = new Camera * [4];
+Camera **cameras = new Camera *[4];
 GLint counter;
 GLint selectedCamera;
 GLfloat const SPEED = 0.2;
@@ -70,23 +72,21 @@ Model models[NMODELS];
 Model importModel(string pathname) {
 
     Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(pathname,
-        aiProcessPreset_TargetRealtime_Quality);
+    const aiScene *scene = importer.ReadFile(pathname,
+                                             aiProcessPreset_TargetRealtime_Quality);
 
-    aiMesh* mesh = scene->mMeshes[0];
+    aiMesh *mesh = scene->mMeshes[0];
 
     int numVerts0 = mesh->mNumFaces * 3;
 
-    float* vertexArray = new float[mesh->mNumFaces * 3 * 3];
-    float* normalArray = new float[mesh->mNumFaces * 3 * 3];
-    float* uvArray     = new float[mesh->mNumFaces * 3 * 2];
+    float *vertexArray = new float[mesh->mNumFaces * 3 * 3];
+    float *normalArray = new float[mesh->mNumFaces * 3 * 3];
+    float *uvArray = new float[mesh->mNumFaces * 3 * 2];
 
-    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
-    {
-        const aiFace& face = mesh->mFaces[i];
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+        const aiFace &face = mesh->mFaces[i];
 
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 0; j < 3; j++) {
             aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[j]];
             memcpy(uvArray, &uv, sizeof(float) * 2);
             uvArray += 2;
@@ -101,43 +101,48 @@ Model importModel(string pathname) {
         }
     }
 
-    uvArray     -= mesh->mNumFaces * 3 * 2;
+    uvArray -= mesh->mNumFaces * 3 * 2;
     normalArray -= mesh->mNumFaces * 3 * 3;
     vertexArray -= mesh->mNumFaces * 3 * 3;
 
-    Model a = { vertexArray, normalArray, uvArray, numVerts0, 0.0 };
+    Model a = {vertexArray, normalArray, uvArray, numVerts0, 0.0};
     return a;
 }
 
 void init(void) {
 
-    cameras[TOP_VIEW] = new Camera({ 0.0f, 20.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, TOP_VIEW); // Vista de enfrente
-    cameras[FRONT_VIEW] = new Camera({ 0.0f, 0.0f, 20.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f }, FRONT_VIEW); // Vista de arriba
-    cameras[SIDE_VIEW] = new Camera({ -20.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, SIDE_VIEW); // Vista de lado izquierdo
-    cameras[FREE_VIEW] = new Camera({ 30.0f, 20.0f, 15.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f }, FREE_VIEW); // Camara movil
-    cameras[SPHERICAL_VIEW] = new Camera({ 0.0f, 5.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f }, SPHERICAL_VIEW); // Camara esferica
+    cameras[TOP_VIEW] = new Camera({0.0f, 20.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
+                                   TOP_VIEW); // Vista de enfrente
+    cameras[FRONT_VIEW] = new Camera({0.0f, 0.0f, 20.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+                                     FRONT_VIEW); // Vista de arriba
+    cameras[SIDE_VIEW] = new Camera({-20.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+                                    SIDE_VIEW); // Vista de lado izquierdo
+    cameras[FREE_VIEW] = new Camera({30.0f, 20.0f, 15.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+                                    FREE_VIEW); // Camara movil
+    cameras[SPHERICAL_VIEW] = new Camera({0.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
+                                         SPHERICAL_VIEW); // Camara esferica
 
     selectedCamera = FREE_VIEW;
     cameras[selectedCamera]->setThetaAngle(-M_PI / 3.0f);
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 
-    models[0] = importModel("Media/LightHouse/Lighthouse_BASE.obj");
-    models[1] = importModel("Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
-    models[2] = importModel("Media/LightHouse/Lighthouse_LIGHT.obj");
-    models[3] = importModel("Media/Rocks/BigRock_1.obj");
-    models[4] = importModel("Media/Rocks/BigRock_2.obj");
-    models[5] = importModel("Media/Rocks/MediumRock_1.obj");
-    models[6] = importModel("Media/Rocks/SmallRock_1.obj");
-    models[7] = importModel("Media/Rocks/SmallRock_2.obj");
-    models[8] = importModel("Media/Rocks/SmallRock_3.obj");
-    models[9] = importModel("Media/Trees/Tree1.obj");
-    models[10] = importModel("Media/Trees/Tree2.obj");
+    models[0] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_BASE.obj");
+    models[1] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
+    models[2] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_LIGHT.obj");
+    models[3] = importModel(ABSOLUTE_PATH "Media/Rocks/BigRock_1.obj");
+    models[4] = importModel(ABSOLUTE_PATH "Media/Rocks/BigRock_2.obj");
+    models[5] = importModel(ABSOLUTE_PATH "Media/Rocks/MediumRock_1.obj");
+    models[6] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_1.obj");
+    models[7] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_2.obj");
+    models[8] = importModel(ABSOLUTE_PATH "Media/Rocks/SmallRock_3.obj");
+    models[9] = importModel(ABSOLUTE_PATH "Media/Trees/Tree1.obj");
+    models[10] = importModel(ABSOLUTE_PATH "Media/Trees/Tree2.obj");
 }
 
 void reshape(GLsizei width, GLsizei height) {
 
-    GLfloat aspect = (GLfloat)width / (GLfloat)height;
+    GLfloat aspect = (GLfloat) width / (GLfloat) height;
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);                    // Select Projection matrix
@@ -182,10 +187,10 @@ void render() {
     vector<float> cameraRotation = cameras[selectedCamera]->getRotation();
 
     gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],  // Posicion de la camara
-        cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
-        cameraPosition[1] + lookDirection[1],
-        cameraPosition[2] + lookDirection[2],
-        cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
+              cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
+              cameraPosition[1] + lookDirection[1],
+              cameraPosition[2] + lookDirection[2],
+              cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -223,79 +228,75 @@ void idle() {
 
 void processSpecialKeys(int key, int x, int y) {
     switch (key) {
-    case GLUT_KEY_F1:
-        selectedCamera = FREE_VIEW;
-        break;
-    case GLUT_KEY_F2:
-        selectedCamera = TOP_VIEW;
-        break;
-    case GLUT_KEY_F3:
-        selectedCamera = FRONT_VIEW;
-        break;
-    case GLUT_KEY_F4:
-        selectedCamera = SIDE_VIEW;
-        break;
-    case GLUT_KEY_F5:
-        selectedCamera = SPHERICAL_VIEW;
-        break;
+        case GLUT_KEY_F1:
+            selectedCamera = FREE_VIEW;
+            break;
+        case GLUT_KEY_F2:
+            selectedCamera = TOP_VIEW;
+            break;
+        case GLUT_KEY_F3:
+            selectedCamera = FRONT_VIEW;
+            break;
+        case GLUT_KEY_F4:
+            selectedCamera = SIDE_VIEW;
+            break;
+        case GLUT_KEY_F5:
+            selectedCamera = SPHERICAL_VIEW;
+            break;
     }
 }
 
 void keyboard(unsigned char key, int x, int y) {
 
     switch (key) {
-    case VK_SPACE:
-        cameras[selectedCamera]->moveUpward(SPEED);
-        break;
-    case 'a':
-    case 'A':
-        cameras[selectedCamera]->moveLeft(SPEED);
-        break;
-    case 'w':
-    case 'W':
-        cameras[selectedCamera]->moveForward(SPEED);
-        break;
-    case 's':
-    case 'S':
-        cameras[selectedCamera]->moveBackward(SPEED);
-        break;
-    case 'd':
-    case 'D':
-        cameras[selectedCamera]->moveRight(SPEED);
-        break;
-    case 'e':
-    case 'E':
-        counter++;
-        if (counter % 5 == 0) {
-            cameras[SPHERICAL_VIEW]->setPosition({ 0.0f, 5.0f, 0.0f }); // vista cenital
-            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, -1.0f, 0.0f });
-            cameras[SPHERICAL_VIEW]->setRotation({ 0.0f, 0.0f, -1.0f });
-        }
-        else if (counter % 5 == 1) {
-            cameras[SPHERICAL_VIEW]->setPosition({ 0.0f, 5.0f, 5.0f }); // vista picado
-            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, -1.0f, -1.0f });
-            cameras[SPHERICAL_VIEW]->setRotation({ 0.0f, 1.0f, 0.0f });
-        }
-        else if (counter % 5 == 2) {
-            cameras[SPHERICAL_VIEW]->setPosition({ 0.0f, 0.0f, 5.0f }); // vista normal
-            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, 0.0f, -1.0f });
-            cameras[SPHERICAL_VIEW]->setRotation({ 0.0f, 1.0f, 0.0f });
-        }
-        else if (counter % 5 == 3) {
-            cameras[SPHERICAL_VIEW]->setPosition({ 0.0f, -5.0f, 5.0f }); // vista contrapicado
-            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, 1.0f, -1.0f });
-            cameras[SPHERICAL_VIEW]->setRotation({ 0.0f, 0.0f, 1.0f });
-        }
-        else {
-            cameras[SPHERICAL_VIEW]->setPosition({ 0.0f, -5.0f, 0.0f }); // vista nadir
-            cameras[SPHERICAL_VIEW]->setDirection({ 0.0f, 1.0f, 0.0f });
-            cameras[SPHERICAL_VIEW]->setRotation({ 0.0f, 0.0f, 1.0f });
-        }
-        break;
-    case 'z':
-    case 'Z':
-        cameras[selectedCamera]->moveDownward(SPEED);
-        break;
+        case VK_SPACE:
+            cameras[selectedCamera]->moveUpward(SPEED);
+            break;
+        case 'a':
+        case 'A':
+            cameras[selectedCamera]->moveLeft(SPEED);
+            break;
+        case 'w':
+        case 'W':
+            cameras[selectedCamera]->moveForward(SPEED);
+            break;
+        case 's':
+        case 'S':
+            cameras[selectedCamera]->moveBackward(SPEED);
+            break;
+        case 'd':
+        case 'D':
+            cameras[selectedCamera]->moveRight(SPEED);
+            break;
+        case 'e':
+        case 'E':
+            counter++;
+            if (counter % 5 == 0) {
+                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 5.0f, 0.0f}); // vista cenital
+                cameras[SPHERICAL_VIEW]->setDirection({0.0f, -1.0f, 0.0f});
+                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, -1.0f});
+            } else if (counter % 5 == 1) {
+                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 5.0f, 5.0f}); // vista picado
+                cameras[SPHERICAL_VIEW]->setDirection({0.0f, -1.0f, -1.0f});
+                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 1.0f, 0.0f});
+            } else if (counter % 5 == 2) {
+                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 0.0f, 5.0f}); // vista normal
+                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 0.0f, -1.0f});
+                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 1.0f, 0.0f});
+            } else if (counter % 5 == 3) {
+                cameras[SPHERICAL_VIEW]->setPosition({0.0f, -5.0f, 5.0f}); // vista contrapicado
+                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 1.0f, -1.0f});
+                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, 1.0f});
+            } else {
+                cameras[SPHERICAL_VIEW]->setPosition({0.0f, -5.0f, 0.0f}); // vista nadir
+                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 1.0f, 0.0f});
+                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, 1.0f});
+            }
+            break;
+        case 'z':
+        case 'Z':
+            cameras[selectedCamera]->moveDownward(SPEED);
+            break;
     }
 }
 
@@ -334,7 +335,7 @@ void mouseMotion(int x, int y) {
 }
 
 // Funcion principal
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
@@ -347,8 +348,8 @@ int main(int argc, char** argv) {
     glutCreateWindow("Etapa 4");
 
     //Configurar luces
-    GLfloat lightPosition[] = { 10.0, 10.0, 10.0, 1.0 };
-    GLfloat lightColor[] = { 1.0, 1.0, 1.0, 0.0 };
+    GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
+    GLfloat lightColor[] = {1.0, 1.0, 1.0, 0.0};
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
