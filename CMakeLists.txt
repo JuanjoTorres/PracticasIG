@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
+project(practica1)
+
 find_package(GLUT)
 find_package(OpenGL)
 
@@ -7,7 +9,6 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS})
 
-project(practica1)
 add_executable(practica1 Practica1/practica1.cpp)
 target_link_libraries(practica1 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
@@ -30,3 +31,12 @@ target_link_libraries(practica5 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 project(practica6)
 add_executable(practica6 Practica6/practica6.cpp Practica6/Camera.cpp)
 target_link_libraries(practica6 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
+find_package(ZLIB)
+find_package(assimp CONFIG REQUIRED)
+
+include_directories(${ASSIMP_INCLUDE_DIRS})
+
+project(practica7)
+add_executable(practica7 Practica7/practica7.cpp Practica7/Camera.cpp)
+target_link_libraries(practica7 PRIVATE ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ZLIB::ZLIB ${ASSIMP_LIBRARY_DIRS}/libIrrXML.a assimp::assimp)
