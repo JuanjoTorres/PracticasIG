@@ -111,7 +111,7 @@ void render() {
     vector<float> cameraRotation = cameras[selectedCamera]->getRotation();
 
     gluLookAt(cameraPosition[0], cameraPosition[1], cameraPosition[2],  // Posicion de la camara
-        cameraPosition[0] + lookDirection[0],                     // Dirección donde apunta la camara
+        cameraPosition[0] + lookDirection[0],                     // DirecciÃ³n donde apunta la camara
         cameraPosition[1] + lookDirection[1],
         cameraPosition[2] + lookDirection[2],
         cameraRotation[0], cameraRotation[1], cameraRotation[2]); // Vector de rotacion
@@ -251,7 +251,7 @@ int main(int argc, char** argv) {
     // Inicializamos la libreria GLUT
     glutInit(&argc, argv);
 
-    // Indicamos posición y tamaño de la ventana
+    // Indicamos posiciÃ³n y tamaÃ±o de la ventana
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - W_WIDTH) / 2, (glutGet(GLUT_SCREEN_HEIGHT) - W_HEIGHT) / 2);
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
