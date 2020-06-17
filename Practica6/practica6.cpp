@@ -99,6 +99,23 @@ void reshape(GLsizei width, GLsizei height) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+
+void paintSectors() {
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f); // Linea horizontal
+    glVertex3f(100.0f, 0.0f, 0.0f);
+
+    glColor3f(0.0f, 1.0f, 1.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f); // Linea vertical
+    glVertex3f(0.0f, -100.0, 0.0f);
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);    // Linea eje z
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glEnd();
+}
+
 void paintGrid() {
     for (int i = 0; i < 40; i++) {
 
@@ -118,8 +135,11 @@ void paintGrid() {
         glVertex3f(19.0f, -0.1f, 0.0f);
         glEnd();
         glPopMatrix();
+
+        //paintSectors();
     }
 }
+
 
 void cambiarSombreado() {
     if (sombreado == 0) {
@@ -354,6 +374,8 @@ int main(int argc, char **argv) {
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition2);
     glLightfv(GL_LIGHT1, GL_SPECULAR, lightColor2);
     glEnable(GL_LIGHT1);
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, lightColor2);
 
     glLightfv(GL_LIGHT2, GL_POSITION, lightPosition3);
     glLightfv(GL_LIGHT2, GL_AMBIENT, lightColor3);
