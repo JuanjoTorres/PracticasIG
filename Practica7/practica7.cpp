@@ -71,20 +71,6 @@ int const NTEXTURES = 8;
 Model models[NMODELS];
 GLuint textures[NTEXTURES];
 
-GLuint loadTexture(const char* pathname) {
-
-    GLuint texture = SOIL_load_OGL_texture
-    (
-        pathname,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-    );
-
-    if (0 == texture) {
-        cout << "SOIL loading error: " << SOIL_last_result << endl;
-    }
-
 //Estado de las luces
 GLboolean statusLight0 = true;
 GLboolean statusLight1 = false;
@@ -110,8 +96,24 @@ GLfloat green[] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat blue[] = {0.0f, 0.0f, 1.0f, 1.0f};
 GLfloat red[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
+GLuint loadTexture(const char* pathname) {
 
-Model importModel(string pathname) {
+    GLuint texture = SOIL_load_OGL_texture
+    (
+        pathname,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+    );
+
+    if (0 == texture) {
+        cout << "SOIL loading error: " << SOIL_last_result << endl;
+    }
+
+    return texture;
+}
+
+Model importModel(string pathname, int textureID) {
 
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(pathname, aiProcessPreset_TargetRealtime_Quality);
