@@ -496,7 +496,7 @@ int main(int argc, char **argv) {
     //Configurar menu
     glutCreateMenu(switchLights);
     glutAddMenuEntry("Disable Diffuse light", 0);
-    glutAddMenuEntry("Enable Ambient light", 1);
+    glutAddMenuEntry("Disable Ambient light", 1);
     glutAddMenuEntry("Disable lighthouse", 2);
     glutAddMenuEntry("Disable automatic lighthouse", 3);
     glutAddMenuEntry("Change to DAY MODE", 4);
