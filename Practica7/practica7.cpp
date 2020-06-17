@@ -26,10 +26,10 @@
 #include <string>
 #include <iostream>
 
+#include "GL/SOIL.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>
-#include "SOIL.h"
 
 using namespace std;
 
@@ -44,7 +44,7 @@ struct Model {
     float *normal;
     float *uv;
     int numVertex;
-    float position;
+    int textureID;
 };
 
 // Control de dispositivos
@@ -64,12 +64,31 @@ GLint counter;
 GLint selectedCamera;
 GLfloat const SPEED = 0.2;
 
-//Models
+//Models & Textures
 //Model models[5];
-int const NMODELS = 3;
+int const NMODELS = 12;
+int const NTEXTURES = 8;
 Model models[NMODELS];
+GLuint textures[NTEXTURES];
 
-Model importModel(string pathname) {
+GLuint loadTexture(const char* pathname) {
+
+    GLuint texture = SOIL_load_OGL_texture
+    (
+        pathname,
+        SOIL_LOAD_AUTO,
+        SOIL_CREATE_NEW_ID,
+        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+    );
+
+    if (0 == texture) {
+        cout << "SOIL loading error: " << SOIL_last_result << endl;
+    }
+
+    return texture;
+}
+
+Model importModel(string pathname, int textureID) {
 
     Assimp::Importer importer;
     const aiScene *scene = importer.ReadFile(pathname,
@@ -105,7 +124,7 @@ Model importModel(string pathname) {
     normalArray -= mesh->mNumFaces * 3 * 3;
     vertexArray -= mesh->mNumFaces * 3 * 3;
 
-    Model a = {vertexArray, normalArray, uvArray, numVerts0, 0.0};
+    Model a = {vertexArray, normalArray, uvArray, numVerts0, textureID};
     return a;
 }
 
@@ -127,9 +146,28 @@ void init(void) {
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 
-    models[0] = importModel("Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
-    models[1] = importModel("Media/LightHouse/Lighthouse_LIGHT.obj");
-    models[2] = importModel("Media/Terrain/Terrain_ALL.obj");
+    textures[0] = loadTexture("Media/Textures/green_field.png");
+    textures[1] = loadTexture("Media/Textures/blue_sea.png");
+    textures[2] = loadTexture("Media/Textures/brown_door.png");
+    textures[3] = loadTexture("Media/Textures/brown_mountain.png");
+    textures[4] = loadTexture("Media/Textures/green_forest.png");
+    textures[5] = loadTexture("Media/Textures/grey.png");
+    textures[6] = loadTexture("Media/Textures/red.png");
+    textures[7] = loadTexture("Media/Textures/white.png");
+
+    models[0] = importModel("Media/Terrain/Terrain_Field.obj", 0);
+    models[1] = importModel("Media/Terrain/Mountains.obj", 3);
+    models[2] = importModel("Media/Terrain/Terrain_Sea.obj", 1);
+    models[3] = importModel("Media/Trees/Tree_Sheets.obj", 4);
+    models[4] = importModel("Media/Trees/Tree_Logs.obj", 2);
+    models[5] = importModel("Media/Rocks/Rocks.obj", 3);
+    models[6] = importModel("Media/Lighthouse/Lighthouse_DOOR.obj", 2);
+    models[7] = importModel("Media/Lighthouse/Lighthouse_BASE.obj", 3);
+    models[8] = importModel("Media/Lighthouse/Lighthouse_WHITEPART.obj", 7);
+    models[9] = importModel("Media/Lighthouse/Lighthouse_REDPART.obj", 6);
+    models[10] = importModel("Media/Lighthouse/Lighthouse_LIGHT.obj", 5);
+    models[11] = importModel("Media/Lighthouse/Lighthouse_ROTATIONPIECE.obj", 5);
+
 }
 
 void reshape(GLsizei width, GLsizei height) {
@@ -193,7 +231,9 @@ void render() {
         glVertexPointer(3, GL_FLOAT, 0, models[i].vertex);
         glNormalPointer(GL_FLOAT, 0, models[i].normal);
 
-        // glClientActiveTexture(GL_TEXTURE0_ARB);
+
+        glBindTexture(GL_TEXTURE_2D, textures[models[i].textureID]);
+
         glTexCoordPointer(2, GL_FLOAT, 0, models[i].uv);
         glDrawArrays(GL_TRIANGLES, 0, models[i].numVertex);
     }
@@ -361,6 +401,7 @@ int main(int argc, char **argv) {
     // Habilitar
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
 
     // Comienza la ejecucion del core de GLUT (RENDERING)
     glutMainLoop();

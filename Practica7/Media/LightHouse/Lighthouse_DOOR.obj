@@ -1,0 +1,17 @@
+# Blender v2.90.0 Alpha OBJ File: 'Juanjomecagoentufeedback.blend'
+# www.blender.org
+mtllib MARRON.mtl
+o Plane.010_Plane.012
+v 8.786483 7.644559 -3.760157
+v 8.566221 7.119638 -3.783421
+v 8.789183 7.119638 -3.749131
+v 8.572109 7.644559 -3.793126
+vt 0.493298 0.492425
+vt 0.502708 0.514758
+vt 0.493113 0.514758
+vt 0.502524 0.492425
+vn -0.1520 0.0200 0.9882
+usemtl Material_Juanjo
+s 1
+f 1/1/1 2/2/1 3/3/1
+f 1/1/1 4/4/1 2/2/1
