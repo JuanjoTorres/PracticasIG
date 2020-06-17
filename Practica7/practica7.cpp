@@ -69,11 +69,15 @@ int const NMODELS = 3;
 Model models[NMODELS];
 
 
+//POsición y color de las luces
+GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
+GLfloat lightColor[] = {1.0, 1.0, 1.0, 0.0};
+
+
 Model importModel(string pathname) {
 
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(pathname,
-                                             aiProcessPreset_TargetRealtime_Quality);
+    const aiScene *scene = importer.ReadFile(pathname, aiProcessPreset_TargetRealtime_Quality);
 
     aiMesh *mesh = scene->mMeshes[0];
 
@@ -127,9 +131,9 @@ void init(void) {
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 
-    models[0] = importModel("Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
-    models[1] = importModel("Media/LightHouse/Lighthouse_LIGHT.obj");
-    models[2] = importModel("Media/Terrain/Terrain_ALL.obj");
+    models[0] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_ROTATIONPIECE.obj");
+    models[1] = importModel(ABSOLUTE_PATH "Media/LightHouse/Lighthouse_LIGHT.obj");
+    models[2] = importModel(ABSOLUTE_PATH "Media/Terrain/Terrain_ALL.obj");
 }
 
 void reshape(GLsizei width, GLsizei height) {
@@ -154,7 +158,7 @@ void paintGrid() {
         if (i >= 20) {
             glTranslatef(i - 20, 0, 0);
             glRotatef(-90, 0, 1, 0);
-        }
+        } 
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glLineWidth(1);
@@ -227,8 +231,17 @@ void processSpecialKeys(int key, int x, int y) {
         case GLUT_KEY_F4:
             selectedCamera = SIDE_VIEW;
             break;
-        case GLUT_KEY_F5:
-            selectedCamera = SPHERICAL_VIEW;
+        case GLUT_KEY_LEFT:
+            cameras[selectedCamera]->moveRight(SPEED);
+            break;
+        case GLUT_KEY_UP:
+            cameras[selectedCamera]->moveForward(SPEED);
+            break;
+        case GLUT_KEY_DOWN:
+            cameras[selectedCamera]->moveBackward(SPEED);
+            break;
+        case GLUT_KEY_RIGHT:
+
             break;
     }
 }
@@ -236,53 +249,35 @@ void processSpecialKeys(int key, int x, int y) {
 void keyboard(unsigned char key, int x, int y) {
 
     switch (key) {
-        case VK_SPACE:
-            cameras[selectedCamera]->moveUpward(SPEED);
-            break;
         case 'a':
         case 'A':
-            cameras[selectedCamera]->moveLeft(SPEED);
-            break;
-        case 'w':
-        case 'W':
-            cameras[selectedCamera]->moveForward(SPEED);
-            break;
-        case 's':
-        case 'S':
-            cameras[selectedCamera]->moveBackward(SPEED);
-            break;
-        case 'd':
-        case 'D':
-            cameras[selectedCamera]->moveRight(SPEED);
-            break;
-        case 'e':
-        case 'E':
-            counter++;
-            if (counter % 5 == 0) {
-                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 5.0f, 0.0f}); // vista cenital
-                cameras[SPHERICAL_VIEW]->setDirection({0.0f, -1.0f, 0.0f});
-                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, -1.0f});
-            } else if (counter % 5 == 1) {
-                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 5.0f, 5.0f}); // vista picado
-                cameras[SPHERICAL_VIEW]->setDirection({0.0f, -1.0f, -1.0f});
-                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 1.0f, 0.0f});
-            } else if (counter % 5 == 2) {
-                cameras[SPHERICAL_VIEW]->setPosition({0.0f, 0.0f, 5.0f}); // vista normal
-                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 0.0f, -1.0f});
-                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 1.0f, 0.0f});
-            } else if (counter % 5 == 3) {
-                cameras[SPHERICAL_VIEW]->setPosition({0.0f, -5.0f, 5.0f}); // vista contrapicado
-                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 1.0f, -1.0f});
-                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, 1.0f});
-            } else {
-                cameras[SPHERICAL_VIEW]->setPosition({0.0f, -5.0f, 0.0f}); // vista nadir
-                cameras[SPHERICAL_VIEW]->setDirection({0.0f, 1.0f, 0.0f});
-                cameras[SPHERICAL_VIEW]->setRotation({0.0f, 0.0f, 1.0f});
-            }
+            lightPosition[0] = lightPosition[0] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
             break;
         case 'z':
         case 'Z':
-            cameras[selectedCamera]->moveDownward(SPEED);
+            lightPosition[0] = lightPosition[0] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            break;
+        case 's':
+        case 'S':
+            lightPosition[1] = lightPosition[1] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            break;
+        case 'x':
+        case 'X':
+            lightPosition[1] = lightPosition[1] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            break;
+        case 'd':
+        case 'D':
+            lightPosition[2] = lightPosition[2] + 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            break;
+        case 'c':
+        case 'C':
+            lightPosition[2] = lightPosition[2] - 0.1;
+            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
             break;
     }
 }
@@ -334,14 +329,14 @@ int main(int argc, char **argv) {
     // Creamos la nueva ventana
     glutCreateWindow("Etapa 6");
 
-    //Configurar luces
-    GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
-    GLfloat lightColor[] = {1.0, 1.0, 1.0, 0.0};
-
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
     glEnable(GL_LIGHT0);
+
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, lightColor);
+    glEnable(GL_LIGHT1);
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
