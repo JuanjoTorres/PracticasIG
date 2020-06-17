@@ -32,6 +32,10 @@ project(practica6)
 add_executable(practica6 Practica6/practica6.cpp Practica6/Camera.cpp)
 target_link_libraries(practica6 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
+project(cubo)
+add_executable(cubo CuboRotativo/cubo.cpp CuboRotativo/Camera.cpp)
+target_link_libraries(cubo ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
 find_package(ZLIB)
 find_package(assimp CONFIG REQUIRED)
 
