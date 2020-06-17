@@ -69,9 +69,30 @@ int const NMODELS = 3;
 Model models[NMODELS];
 
 
+//Estado de las luces
+GLboolean statusLight0 = true;
+GLboolean statusLight1 = false;
+GLboolean statusLight2 = true;
+GLboolean statusLight3 = true;
+
+//POsición y color del foco del faro
+//GLfloat lightHousePosition[] = {8.7, 10.45, -4.15, 1.0};  //Buena
+GLfloat lightHousePosition[] = {8.7, 10.45, -4.15, 1.0};
+GLfloat lightHouseDirection[] = {0.0, -0.5, 0.0};
+
 //POsición y color de las luces
-GLfloat lightPosition[] = {10.0, 10.0, 10.0, 1.0};
-GLfloat lightColor[] = {1.0, 1.0, 1.0, 0.0};
+GLfloat lightPosition[] = {8.7, 10.45, -4.15, 1.0};
+
+// Variable que indica el angulo de rotacion de los ejes del faro
+GLfloat rotateAngle;
+GLfloat rotateAngleLight;
+
+//Color blanco
+GLfloat white[] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat yellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
+GLfloat green[] = {0.0f, 1.0f, 0.0f, 1.0f};
+GLfloat blue[] = {0.0f, 0.0f, 1.0f, 1.0f};
+GLfloat red[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
 
 Model importModel(string pathname) {
@@ -121,7 +142,7 @@ void init(void) {
                                      FRONT_VIEW); // Vista de arriba
     cameras[SIDE_VIEW] = new Camera({-20.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
                                     SIDE_VIEW); // Vista de lado izquierdo
-    cameras[FREE_VIEW] = new Camera({30.0f, 20.0f, 15.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+    cameras[FREE_VIEW] = new Camera({12.9f, 11.7f, 1.0f}, {-0.80f, -0.25f, -0.53f}, {0.0f, 1.0f, 0.0f},
                                     FREE_VIEW); // Camara movil
     cameras[SPHERICAL_VIEW] = new Camera({0.0f, 5.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
                                          SPHERICAL_VIEW); // Camara esferica
@@ -158,7 +179,7 @@ void paintGrid() {
         if (i >= 20) {
             glTranslatef(i - 20, 0, 0);
             glRotatef(-90, 0, 1, 0);
-        } 
+        }
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glLineWidth(1);
@@ -172,6 +193,7 @@ void paintGrid() {
 
 // Funcion que renderiza la escena OpenGL
 void render() {
+    glMatrixMode(GL_MODELVIEW);
 
     // Borramos la escena
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -191,27 +213,75 @@ void render() {
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glPushMatrix();
 
+    glPushMatrix();
     for (int i = 0; i < NMODELS; i++) {
+        glPushMatrix();
+        if (i == 0) {
+            //Rotación sobre el eje vertical del faro
+            glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
+            glRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
+            glTranslatef(-lightHousePosition[0], -lightHousePosition[1], -lightHousePosition[2]);
+        } else if (i == 1) {
+            //Rotación sobre el eje vertical y horizontal del foco del faro
+            glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
+            glRotatef(rotateAngle, 1.0f, 1.0f, 0.0f);
+            glTranslatef(-lightHousePosition[0], -lightHousePosition[1], -lightHousePosition[2]);
+        }
+
+        GLfloat mat_ambient[] = {0.5, 0.5, 0.5, 1.0};
+        GLfloat mat_diffuse[] = {0.8, 0.8, 0.8, 1.0};
+        GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
+        GLfloat mat_emission[] = {0.0, 0.0, 0.0, 1.0};
+        GLfloat mat_shininess = 64.0;
+
+        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+        glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+        glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+
         glVertexPointer(3, GL_FLOAT, 0, models[i].vertex);
         glNormalPointer(GL_FLOAT, 0, models[i].normal);
 
         // glClientActiveTexture(GL_TEXTURE0_ARB);
         glTexCoordPointer(2, GL_FLOAT, 0, models[i].uv);
         glDrawArrays(GL_TRIANGLES, 0, models[i].numVertex);
+        glPopMatrix();
     }
-
     glPopMatrix();
+
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glPushMatrix(); // push under the stack the current modeview matrix
+    glLightfv(GL_LIGHT2, GL_POSITION, lightHousePosition);
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightHouseDirection);
+    glPopMatrix(); // pop the last pushed modelview matrix to restore it as the current
+
+    //Posicion del cubo
+    glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2] + 1.0f);
+    glutSolidCube(0.1f);
 
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void idle() {
+
+    if (statusLight3) {
+        // Incrementamos el angulo y la escala
+        rotateAngle += 2.5f;
+        rotateAngleLight += 0.05f;
+    }
+
+    // Mod 360º
+    rotateAngle = fmod(rotateAngle, 360.0f);
+    rotateAngleLight = fmod(rotateAngleLight, 360.0f);
+
+    lightHouseDirection[0] = sin(rotateAngleLight);
+    lightHouseDirection[2] = cos(rotateAngleLight);
 
     //Repintar la pantalla
     glutPostRedisplay();
@@ -251,35 +321,31 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 'a':
         case 'A':
-            lightPosition[0] = lightPosition[0] + 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[0] = lightHousePosition[0] + 0.005;
             break;
         case 'z':
         case 'Z':
-            lightPosition[0] = lightPosition[0] - 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[0] = lightHousePosition[0] - 0.005;
             break;
         case 's':
         case 'S':
-            lightPosition[1] = lightPosition[1] + 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[1] = lightHousePosition[1] + 0.005;
             break;
         case 'x':
         case 'X':
-            lightPosition[1] = lightPosition[1] - 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[1] = lightHousePosition[1] - 0.005;
             break;
         case 'd':
         case 'D':
-            lightPosition[2] = lightPosition[2] + 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[2] = lightHousePosition[2] + 0.005;
             break;
         case 'c':
         case 'C':
-            lightPosition[2] = lightPosition[2] - 0.1;
-            glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+            lightHousePosition[2] = lightHousePosition[2] - 0.005;
             break;
     }
+
+    cout << lightHousePosition[0] << ' ' << lightHousePosition[1] << ' ' << lightHousePosition[2] << '\n';
 }
 
 // Acciones del mouse [PULSAR]
@@ -316,6 +382,50 @@ void mouseMotion(int x, int y) {
     mouseY = y;
 }
 
+void switchLights(int item) {
+
+    switch (item) {
+        case 0:
+            statusLight0 = !statusLight0;
+            if (statusLight0) {
+                glEnable(GL_LIGHT0);
+                glutChangeToMenuEntry(item + 1, "Disable diffuse light", item);
+            } else {
+                glDisable(GL_LIGHT0);
+                glutChangeToMenuEntry(item + 1, "Enable diffuse light", item);
+            }
+            break;
+        case 1:
+            statusLight1 = !statusLight1;
+            if (statusLight1) {
+                glEnable(GL_LIGHT1);
+                glutChangeToMenuEntry(item + 1, "Disable ambient light", item);
+            } else {
+                glDisable(GL_LIGHT1);
+                glutChangeToMenuEntry(item + 1, "Enable ambient light", item);
+            }
+            break;
+        case 2:
+            statusLight2 = !statusLight2;
+            if (statusLight2) {
+                glEnable(GL_LIGHT2);
+                glutChangeToMenuEntry(item + 1, "Disable lighthouse", item);
+            } else {
+                glDisable(GL_LIGHT2);
+                glutChangeToMenuEntry(item + 1, "Enable lighthouse", item);
+            }
+            break;
+        case 3:
+            statusLight3 = !statusLight3;
+            if (statusLight3) {
+                glutChangeToMenuEntry(item + 1, "Disable automatic lighthouse", item);
+            } else {
+                glutChangeToMenuEntry(item + 1, "Enable automatic lighthouse", item);
+            }
+            break;
+    }
+}
+
 // Funcion principal
 int main(int argc, char **argv) {
     // Inicializamos la libreria GLUT
@@ -327,16 +437,33 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 
     // Creamos la nueva ventana
-    glutCreateWindow("Etapa 6");
+    glutCreateWindow("Etapa final");
 
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+    //Configurar menu
+    glutCreateMenu(switchLights);
+    glutAddMenuEntry("Disable Diffuse light", 0);
+    glutAddMenuEntry("Enable Ambient light", 1);
+    glutAddMenuEntry("Disable lighthouse", 2);
+    glutAddMenuEntry("Disable automatic lighthouse", 3);
+
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+    // Configurar luces
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
     glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, lightColor);
-    glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, white);
+    //glEnable(GL_LIGHT1);
+
+    glLightfv(GL_LIGHT2, GL_POSITION, lightHousePosition);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, yellow);
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightHouseDirection);
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30.0f);
+    //glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 4);
+    glEnable(GL_LIGHT2);
 
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
