@@ -74,10 +74,11 @@ Model models[NMODELS];
 GLuint textures[NTEXTURES];
 
 //Estado de las luces
-GLboolean statusLight0 = true;
-GLboolean statusLight1 = false;
-GLboolean statusLight2 = true;
-GLboolean statusLight3 = true;
+GLboolean statusMenu0 = true;
+GLboolean statusMenu1 = true;
+GLboolean statusMenu2 = true;
+GLboolean statusMenu3 = true;
+GLboolean statusMenu4 = true;
 
 //POsición y color del foco del faro
 //GLfloat lightHousePosition[] = {8.7, 10.45, -4.15, 1.0};  //Buena
@@ -92,7 +93,8 @@ GLfloat rotateAngle;
 GLfloat rotateAngleLight;
 
 //Color blanco
-GLfloat white[] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat dayLight[] = {1.0f, 1.0f, 1.0f, 1.0f};
+GLfloat moonLight[] = {0.05f, 0.05f, 0.05f, 0.05f};
 GLfloat yellow[] = {1.0f, 1.0f, 0.0f, 1.0f};
 GLfloat green[] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat blue[] = {0.0f, 0.0f, 1.0f, 1.0f};
@@ -108,9 +110,8 @@ GLuint loadTexture(const char *pathname) {
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
             );
 
-    if (0 == texture) {
-        cout << "SOIL loading error: " << SOIL_last_result << endl;
-    }
+    if (0 == texture)
+        cout << "SOIL loading error: " << &SOIL_last_result << endl;
 
     return texture;
 }
@@ -311,7 +312,7 @@ void render() {
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void idle() {
 
-    if (statusLight3) {
+    if (statusMenu3) {
         // Incrementamos el angulo y la escala
         rotateAngle += 2.5f;
         rotateAngleLight += 0.05f;
@@ -427,8 +428,8 @@ void switchLights(int item) {
 
     switch (item) {
         case 0:
-            statusLight0 = !statusLight0;
-            if (statusLight0) {
+            statusMenu0 = !statusMenu0;
+            if (statusMenu0) {
                 glEnable(GL_LIGHT0);
                 glutChangeToMenuEntry(item + 1, "Disable diffuse light", item);
             } else {
@@ -437,8 +438,8 @@ void switchLights(int item) {
             }
             break;
         case 1:
-            statusLight1 = !statusLight1;
-            if (statusLight1) {
+            statusMenu1 = !statusMenu1;
+            if (statusMenu1) {
                 glEnable(GL_LIGHT1);
                 glutChangeToMenuEntry(item + 1, "Disable ambient light", item);
             } else {
@@ -447,8 +448,8 @@ void switchLights(int item) {
             }
             break;
         case 2:
-            statusLight2 = !statusLight2;
-            if (statusLight2) {
+            statusMenu2 = !statusMenu2;
+            if (statusMenu2) {
                 glEnable(GL_LIGHT2);
                 glutChangeToMenuEntry(item + 1, "Disable lighthouse", item);
             } else {
@@ -457,11 +458,23 @@ void switchLights(int item) {
             }
             break;
         case 3:
-            statusLight3 = !statusLight3;
-            if (statusLight3) {
+            statusMenu3 = !statusMenu3;
+            if (statusMenu3) {
                 glutChangeToMenuEntry(item + 1, "Disable automatic lighthouse", item);
             } else {
                 glutChangeToMenuEntry(item + 1, "Enable automatic lighthouse", item);
+            }
+            break;
+        case 4:
+            statusMenu4 = !statusMenu4;
+            if (statusMenu4) {
+                glutChangeToMenuEntry(item + 1, "Change to DAY MODE", item);
+                glLightfv(GL_LIGHT0, GL_DIFFUSE, moonLight);
+                glLightfv(GL_LIGHT1, GL_AMBIENT, moonLight);
+            } else {
+                glutChangeToMenuEntry(item + 1, "Change to NIGHT MODE", item);
+                glLightfv(GL_LIGHT0, GL_DIFFUSE, dayLight);
+                glLightfv(GL_LIGHT1, GL_AMBIENT, dayLight);
             }
             break;
     }
@@ -486,18 +499,19 @@ int main(int argc, char **argv) {
     glutAddMenuEntry("Enable Ambient light", 1);
     glutAddMenuEntry("Disable lighthouse", 2);
     glutAddMenuEntry("Disable automatic lighthouse", 3);
+    glutAddMenuEntry("Change to DAY MODE", 4);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
     // Configurar luces
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 0);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, moonLight);
     glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
-    glLightfv(GL_LIGHT1, GL_AMBIENT, white);
-    //glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, moonLight);
+    glEnable(GL_LIGHT1);
 
     glLightfv(GL_LIGHT2, GL_POSITION, lightHousePosition);
     glLightfv(GL_LIGHT2, GL_SPECULAR, yellow);
