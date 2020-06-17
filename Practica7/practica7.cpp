@@ -159,9 +159,9 @@ void init(void) {
 
     cameras[TOP_VIEW] = new Camera({0.0f, 20.0f, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f, -1.0f},
                                    TOP_VIEW); // Vista de enfrente
-    cameras[FRONT_VIEW] = new Camera({0.0f, 0.0f, 20.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
+    cameras[FRONT_VIEW] = new Camera({0.0f, 10.0f, 20.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f},
                                      FRONT_VIEW); // Vista de arriba
-    cameras[SIDE_VIEW] = new Camera({-20.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
+    cameras[SIDE_VIEW] = new Camera({-20.0f, 10.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f},
                                     SIDE_VIEW); // Vista de lado izquierdo
     cameras[FREE_VIEW] = new Camera({12.9f, 11.7f, 1.0f}, {-0.80f, -0.25f, -0.53f}, {0.0f, 1.0f, 0.0f},
                                     FREE_VIEW); // Camara movil
@@ -344,7 +344,7 @@ void processSpecialKeys(int key, int x, int y) {
             selectedCamera = SIDE_VIEW;
             break;
         case GLUT_KEY_LEFT:
-            cameras[selectedCamera]->moveRight(SPEED);
+            cameras[selectedCamera]->moveLeft(SPEED);
             break;
         case GLUT_KEY_UP:
             cameras[selectedCamera]->moveForward(SPEED);
@@ -353,7 +353,7 @@ void processSpecialKeys(int key, int x, int y) {
             cameras[selectedCamera]->moveBackward(SPEED);
             break;
         case GLUT_KEY_RIGHT:
-
+            cameras[selectedCamera]->moveRight(SPEED);
             break;
     }
 }
@@ -361,12 +361,17 @@ void processSpecialKeys(int key, int x, int y) {
 void keyboard(unsigned char key, int x, int y) {
 
     switch (key) {
+        case VK_SPACE:
+            cameras[selectedCamera]->moveUpward(SPEED);
+        break;
         case 'a':
         case 'A':
             lightHousePosition[0] = lightHousePosition[0] + 0.005;
             break;
         case 'z':
         case 'Z':
+            // CAMBIAR DEPUES DE HACER PREUBAS
+            // cameras[selectedCamera]->moveDownward(SPEED);
             lightHousePosition[0] = lightHousePosition[0] - 0.005;
             break;
         case 's':
