@@ -254,12 +254,12 @@ void render() {
     glPushMatrix();
     for (int i = 0; i < NMODELS; i++) {
         glPushMatrix();
-        if (i == 0) {
+        if (i == 11) {
             //Rotación sobre el eje vertical del faro
             glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
             glRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
             glTranslatef(-lightHousePosition[0], -lightHousePosition[1], -lightHousePosition[2]);
-        } else if (i == 1) {
+        } else if (i == 10) {
             //Rotación sobre el eje vertical y horizontal del foco del faro
             glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
             glRotatef(rotateAngle, 1.0f, 1.0f, 0.0f);
