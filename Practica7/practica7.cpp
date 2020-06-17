@@ -29,6 +29,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>
+#include "SOIL.h"
 
 using namespace std;
 
@@ -67,7 +68,6 @@ GLfloat const SPEED = 0.2;
 //Model models[5];
 int const NMODELS = 3;
 Model models[NMODELS];
-
 
 Model importModel(string pathname) {
 
