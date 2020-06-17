@@ -38,9 +38,10 @@ target_link_libraries(cubo ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 find_package(ZLIB)
 find_package(assimp CONFIG REQUIRED)
+find_package(SOIL CONFIG REQUIRED)
 
 include_directories(${ASSIMP_INCLUDE_DIRS})
 
 project(practica7)
 add_executable(practica7 Practica7/practica7.cpp Practica7/Camera.cpp)
-target_link_libraries(practica7 PRIVATE ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ZLIB::ZLIB ${ASSIMP_LIBRARY_DIRS}/libIrrXML.a assimp::assimp)
+target_link_libraries(practica7 PRIVATE ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ZLIB::ZLIB ${ASSIMP_LIBRARY_DIRS}/libIrrXML.a assimp::assimp SOIL)

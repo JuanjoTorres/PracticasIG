@@ -7,6 +7,7 @@
 #include <OpenGL/gl.h>
 #include <GLUT/glut.h>
 #include "Camera.h"
+#include "SOIL/SOIL.h"
 
 #else
 #define ABSOLUTE_PATH ""
@@ -15,6 +16,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "camera.h"
+
+#include "GL/SOIL.h"
 
 #endif
 
@@ -26,7 +29,6 @@
 #include <string>
 #include <iostream>
 
-#include "GL/SOIL.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>
@@ -96,15 +98,15 @@ GLfloat green[] = {0.0f, 1.0f, 0.0f, 1.0f};
 GLfloat blue[] = {0.0f, 0.0f, 1.0f, 1.0f};
 GLfloat red[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
-GLuint loadTexture(const char* pathname) {
+GLuint loadTexture(const char *pathname) {
 
     GLuint texture = SOIL_load_OGL_texture
-    (
-        pathname,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-    );
+            (
+                    pathname,
+                    SOIL_LOAD_AUTO,
+                    SOIL_CREATE_NEW_ID,
+                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+            );
 
     if (0 == texture) {
         cout << "SOIL loading error: " << SOIL_last_result << endl;
@@ -170,27 +172,27 @@ void init(void) {
     cameras[selectedCamera]->setPhiAngle(M_PI / 2.8f);
     cameras[selectedCamera]->updateOrientation();
 
-    textures[0] = loadTexture("Media/Textures/green_field.png");
-    textures[1] = loadTexture("Media/Textures/blue_sea.png");
-    textures[2] = loadTexture("Media/Textures/brown_door.png");
-    textures[3] = loadTexture("Media/Textures/brown_mountain.png");
-    textures[4] = loadTexture("Media/Textures/green_forest.png");
-    textures[5] = loadTexture("Media/Textures/grey.png");
-    textures[6] = loadTexture("Media/Textures/red.png");
-    textures[7] = loadTexture("Media/Textures/white.png");
+    textures[0] = loadTexture(ABSOLUTE_PATH "Media/Textures/green_field.png");
+    textures[1] = loadTexture(ABSOLUTE_PATH "Media/Textures/blue_sea.png");
+    textures[2] = loadTexture(ABSOLUTE_PATH "Media/Textures/brown_door.png");
+    textures[3] = loadTexture(ABSOLUTE_PATH "Media/Textures/brown_mountain.png");
+    textures[4] = loadTexture(ABSOLUTE_PATH "Media/Textures/green_forest.png");
+    textures[5] = loadTexture(ABSOLUTE_PATH "Media/Textures/grey.png");
+    textures[6] = loadTexture(ABSOLUTE_PATH "Media/Textures/red.png");
+    textures[7] = loadTexture(ABSOLUTE_PATH "Media/Textures/white.png");
 
-    models[0] = importModel("Media/Terrain/Terrain_Field.obj", 0);
-    models[1] = importModel("Media/Terrain/Mountains.obj", 3);
-    models[2] = importModel("Media/Terrain/Terrain_Sea.obj", 1);
-    models[3] = importModel("Media/Trees/Tree_Sheets.obj", 4);
-    models[4] = importModel("Media/Trees/Tree_Logs.obj", 2);
-    models[5] = importModel("Media/Rocks/Rocks.obj", 3);
-    models[6] = importModel("Media/Lighthouse/Lighthouse_DOOR.obj", 2);
-    models[7] = importModel("Media/Lighthouse/Lighthouse_BASE.obj", 3);
-    models[8] = importModel("Media/Lighthouse/Lighthouse_WHITEPART.obj", 7);
-    models[9] = importModel("Media/Lighthouse/Lighthouse_REDPART.obj", 6);
-    models[10] = importModel("Media/Lighthouse/Lighthouse_LIGHT.obj", 5);
-    models[11] = importModel("Media/Lighthouse/Lighthouse_ROTATIONPIECE.obj", 5);
+    models[0] = importModel(ABSOLUTE_PATH "Media/Terrain/Terrain_Field.obj", 0);
+    models[1] = importModel(ABSOLUTE_PATH "Media/Terrain/Mountains.obj", 3);
+    models[2] = importModel(ABSOLUTE_PATH "Media/Terrain/Terrain_Sea.obj", 1);
+    models[3] = importModel(ABSOLUTE_PATH "Media/Trees/Tree_Sheets.obj", 4);
+    models[4] = importModel(ABSOLUTE_PATH "Media/Trees/Tree_Logs.obj", 2);
+    models[5] = importModel(ABSOLUTE_PATH "Media/Rocks/Rocks.obj", 3);
+    models[6] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_DOOR.obj", 2);
+    models[7] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_BASE.obj", 3);
+    models[8] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_WHITEPART.obj", 7);
+    models[9] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_REDPART.obj", 6);
+    models[10] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_LIGHT.obj", 5);
+    models[11] = importModel(ABSOLUTE_PATH "Media/Lighthouse/Lighthouse_ROTATIONPIECE.obj", 5);
 
 }
 
