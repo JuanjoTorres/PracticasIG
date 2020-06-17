@@ -53,9 +53,6 @@ GLfloat const SPEED = 0.2;
 //Estado de las luces
 GLboolean statusLight0 = true;
 GLboolean statusLight1 = true;
-GLboolean statusLight2 = true;
-GLboolean statusLight3 = true;
-GLboolean statusNormal = true;
 
 //Configurar luces
 GLfloat lightPosition1[] = { 1, 0, 0, 1 };
@@ -64,11 +61,8 @@ GLfloat lightColor1[] = { 1.0, 1.0, 0.4, 1.0 };
 GLfloat lightPosition2[] = { 0, 1, 0, 1 };
 GLfloat lightColor2[] = { 1.0, 0.4, 1, 1.0 };
 
-GLfloat lightPosition3[] = { 0, 0, 0, 1 };
-GLfloat lightColor3[] = { 0.4, 1, 1, 1.0 };
-
-GLfloat lightPosition4[] = { 0, 0, 1, 1 };
-GLfloat lightColor4[] = { 1.0, 1, 1, 1.0 };
+// Variable que indica el angulo de rotacion de los ejes del triangulo y el cuadrado
+GLfloat rotateAngle;
 
 void init(void) {
 
@@ -150,9 +144,16 @@ void render() {
     // Pintar suelo
     glColor3f(1.0f, 1.0f, 1.0f);
     paintGrid();
+
     //Pintar las figuras
     glColor3f(0.6f, 0.6f, 0.6f);
+
+    //Posicion del cubo
     glTranslatef(10, 5, 10);
+
+    //Rotación del cubo
+    glRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
+
     glutSolidCube(4.0);
 
     cambiarSombreado();
@@ -163,6 +164,13 @@ void render() {
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void idle() {
+
+    // Incrementamos el angulo y la escala
+    rotateAngle += 0.3f;
+
+    // Si es mayor que dos pi la decrementamos
+    if (rotateAngle > 360)
+        rotateAngle -= 360;
 
     //Repintar la pantalla
     glutPostRedisplay();
@@ -293,30 +301,10 @@ void switchLights(int item) {
             statusLight1 = !statusLight1;
             if (statusLight1) {
                 glEnable(GL_LIGHT1);
-                glutChangeToMenuEntry(item + 1, "Disable specular light", item);
-            } else {
-                glDisable(GL_LIGHT1);
-                glutChangeToMenuEntry(item + 1, "Enable specular light", item);
-            }
-            break;
-        case 2:
-            statusLight2 = !statusLight2;
-            if (statusLight2) {
-                glEnable(GL_LIGHT2);
                 glutChangeToMenuEntry(item + 1, "Disable ambient light", item);
             } else {
-                glDisable(GL_LIGHT2);
+                glDisable(GL_LIGHT1);
                 glutChangeToMenuEntry(item + 1, "Enable ambient light", item);
-            }
-            break;
-        case 3:
-            statusNormal = !statusNormal;
-            if (statusNormal) {
-                glEnable(GL_NORMALIZE);
-                glutChangeToMenuEntry(item + 1, "Disable GL_NORMAL", item);
-            } else {
-                glDisable(GL_NORMALIZE);
-                glutChangeToMenuEntry(item + 1, "Enable GL_NORMAL", item);
             }
             break;
     }
@@ -339,9 +327,7 @@ int main(int argc, char **argv) {
     //Configurar menu
     glutCreateMenu(switchLights);
     glutAddMenuEntry("Disable Diffuse light", 0);
-    glutAddMenuEntry("Disable Specular light", 1);
-    glutAddMenuEntry("Disable Ambient light", 2);
-    glutAddMenuEntry("Disable GL_NORMAL", 3);
+    glutAddMenuEntry("Disable Ambient light", 1);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 
@@ -352,12 +338,9 @@ int main(int argc, char **argv) {
     glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_POSITION, lightPosition2);
-    glLightfv(GL_LIGHT1, GL_SPECULAR, lightColor2);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, lightColor2);
     glEnable(GL_LIGHT1);
 
-    glLightfv(GL_LIGHT2, GL_POSITION, lightPosition3);
-    glLightfv(GL_LIGHT2, GL_AMBIENT, lightColor3);
-    glEnable(GL_LIGHT2);
     // El color de fondo sera el negro (RGBA, RGB + Alpha channel)
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
