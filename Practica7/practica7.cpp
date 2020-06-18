@@ -293,6 +293,10 @@ void idle() {
         rotateAngleLight += 0.05f;
     }
 
+    if (rotateAngleHorizontal < 306)
+        rotateAngleHorizontal += 360;
+
+
     // Mod 360º
     rotateAngleHorizontal = fmod(rotateAngleHorizontal, 360.0f);
     rotateAngleLight = fmod(rotateAngleLight, 360.0f);
