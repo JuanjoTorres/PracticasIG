@@ -366,8 +366,6 @@ void keyboard(unsigned char key, int x, int y) {
             rotateAngleVertical += 2.5f;
             break;
     }
-
-    cout << rotateAngleHorizontal << " Luz: " << rotateAngleLight << '\n';
 }
 
 // Acciones del mouse [PULSAR]
