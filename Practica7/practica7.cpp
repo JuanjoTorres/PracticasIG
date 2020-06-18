@@ -89,7 +89,8 @@ GLfloat lightHouseDirection[] = {0.0, -0.5, 0.0};
 GLfloat lightPosition[] = {8.7, 10.45, -4.15, 1.0};
 
 // Variable que indica el angulo de rotacion de los ejes del faro
-GLfloat rotateAngle;
+GLfloat rotateAngleHorizontal;
+GLfloat rotateAngleVertical;
 GLfloat rotateAngleLight;
 
 //Color blanco
@@ -209,28 +210,6 @@ void reshape(GLsizei width, GLsizei height) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void paintGrid() {
-    for (int i = 0; i < 40; i++) {
-
-        glPushMatrix();
-
-        if (i < 20)
-            glTranslatef(0, 0, i);
-        if (i >= 20) {
-            glTranslatef(i - 20, 0, 0);
-            glRotatef(-90, 0, 1, 0);
-        }
-
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glLineWidth(1);
-        glBegin(GL_LINES);
-        glVertex3f(0.0f, -0.1f, 0.0f);
-        glVertex3f(19.0f, -0.1f, 0.0f);
-        glEnd();
-        glPopMatrix();
-    }
-}
-
 // Funcion que renderiza la escena OpenGL
 void render() {
     glMatrixMode(GL_MODELVIEW);
@@ -260,12 +239,13 @@ void render() {
         if (i == 11) {
             //Rotación sobre el eje vertical del faro
             glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
-            glRotatef(rotateAngle, 0.0f, 1.0f, 0.0f);
+            glRotatef(rotateAngleHorizontal, 0.0f, 1.0f, 0.0f);
             glTranslatef(-lightHousePosition[0], -lightHousePosition[1], -lightHousePosition[2]);
         } else if (i == 10) {
             //Rotación sobre el eje vertical y horizontal del foco del faro
             glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2]);
-            glRotatef(rotateAngle, 1.0f, 1.0f, 0.0f);
+            glRotatef(rotateAngleHorizontal, 0.0f, 1.0f, 0.0f);
+            glRotatef(rotateAngleVertical, 1.0f, 0.0f, 0.0f);
             glTranslatef(-lightHousePosition[0], -lightHousePosition[1], -lightHousePosition[2]);
         }
 
@@ -284,7 +264,6 @@ void render() {
         glVertexPointer(3, GL_FLOAT, 0, models[i].vertex);
         glNormalPointer(GL_FLOAT, 0, models[i].normal);
 
-
         glBindTexture(GL_TEXTURE_2D, textures[models[i].textureID]);
 
         glTexCoordPointer(2, GL_FLOAT, 0, models[i].uv);
@@ -302,24 +281,20 @@ void render() {
     glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightHouseDirection);
     glPopMatrix(); // pop the last pushed modelview matrix to restore it as the current
 
-    //Posicion del cubo
-    glTranslatef(lightHousePosition[0], lightHousePosition[1], lightHousePosition[2] + 1.0f);
-    glutSolidCube(0.1f);
-
     glutSwapBuffers();
 }
 
 // Funcion que se ejecuta cuando el sistema no esta ocupado
 void idle() {
 
-    if (statusMenu3) {
+    if (!statusMenu3) {
         // Incrementamos el angulo y la escala
-        rotateAngle += 2.5f;
+        rotateAngleHorizontal += 2.5f;
         rotateAngleLight += 0.05f;
     }
 
     // Mod 360º
-    rotateAngle = fmod(rotateAngle, 360.0f);
+    rotateAngleHorizontal = fmod(rotateAngleHorizontal, 360.0f);
     rotateAngleLight = fmod(rotateAngleLight, 360.0f);
 
     lightHouseDirection[0] = sin(rotateAngleLight);
@@ -363,36 +338,36 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case VK_SPACE:
             cameras[selectedCamera]->moveUpward(SPEED);
-        break;
-        case 'a':
-        case 'A':
-            lightHousePosition[0] = lightHousePosition[0] + 0.005;
             break;
         case 'z':
         case 'Z':
-            // CAMBIAR DEPUES DE HACER PREUBAS
-            // cameras[selectedCamera]->moveDownward(SPEED);
-            lightHousePosition[0] = lightHousePosition[0] - 0.005;
+            cameras[selectedCamera]->moveDownward(SPEED);
             break;
-        case 's':
-        case 'S':
-            lightHousePosition[1] = lightHousePosition[1] + 0.005;
-            break;
-        case 'x':
-        case 'X':
-            lightHousePosition[1] = lightHousePosition[1] - 0.005;
+        case 'a':
+        case 'A':
+            if (statusMenu3) {
+                rotateAngleHorizontal += 2.5f;
+                rotateAngleLight += 0.05f;
+            }
             break;
         case 'd':
         case 'D':
-            lightHousePosition[2] = lightHousePosition[2] + 0.005;
+            if (statusMenu3) {
+                rotateAngleHorizontal -= 2.5f;
+                rotateAngleLight -= 0.05f;
+            }
             break;
-        case 'c':
-        case 'C':
-            lightHousePosition[2] = lightHousePosition[2] - 0.005;
+        case 'w':
+        case 'W':
+            rotateAngleVertical -= 2.5f;
+            break;
+        case 's':
+        case 'S':
+            rotateAngleVertical += 2.5f;
             break;
     }
 
-    cout << lightHousePosition[0] << ' ' << lightHousePosition[1] << ' ' << lightHousePosition[2] << '\n';
+    cout << rotateAngleHorizontal << " Luz: " << rotateAngleLight << '\n';
 }
 
 // Acciones del mouse [PULSAR]
@@ -465,9 +440,9 @@ void switchLights(int item) {
         case 3:
             statusMenu3 = !statusMenu3;
             if (statusMenu3) {
-                glutChangeToMenuEntry(item + 1, "Disable automatic lighthouse", item);
+                glutChangeToMenuEntry(item + 1, "Set automatic lighthouse", item);
             } else {
-                glutChangeToMenuEntry(item + 1, "Enable automatic lighthouse", item);
+                glutChangeToMenuEntry(item + 1, "Set manual lighthouse", item);
             }
             break;
         case 4:
@@ -503,7 +478,7 @@ int main(int argc, char **argv) {
     glutAddMenuEntry("Disable Diffuse light", 0);
     glutAddMenuEntry("Disable Ambient light", 1);
     glutAddMenuEntry("Disable lighthouse", 2);
-    glutAddMenuEntry("Disable automatic lighthouse", 3);
+    glutAddMenuEntry("Set automatic lighthouse", 3);
     glutAddMenuEntry("Change to DAY MODE", 4);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);

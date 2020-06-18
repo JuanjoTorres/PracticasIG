@@ -21,7 +21,7 @@ add_executable(pendulum Practica3/practica3.cpp)
 target_link_libraries(pendulum ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 project(examen)
-add_executable(examen ExamenGrua/Examen.cpp)
+add_executable(examen Examen/examen.cpp)
 target_link_libraries(examen ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 project(practica4)
@@ -35,10 +35,6 @@ target_link_libraries(practica5 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 project(practica6)
 add_executable(practica6 Practica6/practica6.cpp Practica6/Camera.cpp)
 target_link_libraries(practica6 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
-
-project(cubo)
-add_executable(cubo CuboRotativo/cubo.cpp CuboRotativo/Camera.cpp)
-target_link_libraries(cubo ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 find_package(ZLIB)
 find_package(assimp CONFIG REQUIRED)
