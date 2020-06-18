@@ -17,6 +17,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <stdio.h>
 
 const int W_WIDTH = 600;
 const int W_HEIGHT = 600;
@@ -39,6 +40,8 @@ GLfloat spot_direction[] = {0.0f, -1.0f, 0.0f};
 
 GLfloat especularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat difuseLight[] = {0.8f, 0.8f, 0.8f, 1.0f};
+
+void drawAxisXYZ();
 
 void reshape(int width, int height) {
 
@@ -81,47 +84,8 @@ void render(void) {
 
     gluLookAt(0.1, 0.1, 0.1, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0);
 
-    //Ejes X
-    glBegin(GL_LINES);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(1.0f, 0.0f, 0.0f);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.95f, 0.01f, 0.0f);
-    glVertex3f(0.95f, -0.01f, 0.0f);
-    glEnd();
-
-    //Ejes y
-    glBegin(GL_LINES);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.01f, 0.95f, -0.01f);
-    glVertex3f(-0.01f, 0.95f, 0.01f);
-    glEnd();
-
-    //Ejes z
-    glBegin(GL_LINES);
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 1.0f);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.01f, 0.95f);
-    glVertex3f(0.0f, -0.01f, 0.95f);
-    glEnd();
+    //Dibujar ejes 3D
+    drawAxisXYZ();
 
     //Base de la grua
     glPushMatrix();
@@ -177,6 +141,50 @@ void render(void) {
 
     // Intercambiar buffers
     glutSwapBuffers();
+}
+
+void drawAxisXYZ() {
+    //Eje X
+    glBegin(GL_LINES);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(1.0f, 0.0f, 0.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(0.95f, 0.01f, 0.0f);
+    glVertex3f(0.95f, -0.01f, 0.0f);
+    glEnd();
+
+    //Eje Y
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.01f, 0.95f, -0.01f);
+    glVertex3f(-0.01f, 0.95f, 0.01f);
+    glEnd();
+
+    //Eje Z
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 1.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.01f, 0.95f);
+    glVertex3f(0.0f, -0.01f, 0.95f);
+    glEnd();
 }
 
 void idle(void) {
