@@ -20,6 +20,10 @@ project(practica3)
 add_executable(pendulum Practica3/practica3.cpp)
 target_link_libraries(pendulum ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
+project(examen)
+add_executable(examen ExamenGrua/Examen.cpp)
+target_link_libraries(examen ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
 project(practica4)
 add_executable(practica4 Practica4/practica4.cpp)
 target_link_libraries(practica4 ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
