@@ -293,7 +293,7 @@ void idle() {
         rotateAngleLight += 0.05f;
     }
 
-    if (rotateAngleHorizontal < 306)
+    if (rotateAngleHorizontal < 360)
         rotateAngleHorizontal += 360;
 
 
